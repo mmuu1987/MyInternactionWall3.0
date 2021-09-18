@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<CommonTag>
+  <LOG_LEVENL>3</LOG_LEVENL>
+  <!--屏幕的宽-->
+  <ScreenWidth>1920</ScreenWidth>
+  <!--屏幕的高-->
+  <ScreenHeight>1080</ScreenHeight>
+
+  <!--发送目标的ip地址-->
+  <UDPip>192.168.1.180</UDPip>
+
+  <!--UDP发送信号所到达的端口-->
+  <UDPSendPort>6000</UDPSendPort>
+
+  <!--UDP发送信号本地启动的端口-->
+  <UDPSelfPort>5999</UDPSelfPort>
+
+  <!--UDP本机接收信号的端口-->
+  <UDPReceivePort>6000</UDPReceivePort>
+<!--是否是左边，不是为false,否则true-->
+  <IsLeft>true</IsLeft>
+
+  <!--二维码显示的时间-->
+  <ShowQrTime>180</ShowQrTime>
+  <URLS>
+    
+  </URLS>
+  <comStr>
+    <command>
+
+    </command>
+  </comStr>
+</CommonTag>
