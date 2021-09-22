@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class ConvertPixelMabager : MonoBehaviour
+public class ConvertPixelManager : MonoBehaviour
 {
 
-    public int ScreenWidth = 1920;
-
-    public int ScreenHeight = 1080;
+    
 
     public float PictureWidth = 100f;
 
@@ -18,12 +16,15 @@ public class ConvertPixelMabager : MonoBehaviour
 
     public float SpaceHeight = 3f;
 
-    public int Column = 19;
+    public int Column = 50;
 
-    public int Row = 10;
+    public int Row = 30;
 
+    public Material Material;
 
-    private List<ConvertPixel > ConvertPixels = new List<ConvertPixel>();
+    public GameObject PrefabGameObject;
+
+    private List<ConvertPixel> ConvertPixels = new List<ConvertPixel>();
 
     /// <summary>
     /// 选择像素模式还是个数模式,像素模式是每个图片大小一致，个数模式为每个图片的宽不一致，高一致
@@ -32,6 +33,7 @@ public class ConvertPixelMabager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("窗口分辨率为：" +Screen.width +"   " +Screen.height);
         HandleData();
     }
 
@@ -49,38 +51,43 @@ public class ConvertPixelMabager : MonoBehaviour
             Column += 1;//列数多一个，防止运动的时候有真空带
             Row += 1;//横数多一个，防止运动的时候有真空带
 
-            float width = ScreenWidth * 1f / Column ;
+            float width = Screen.width * 1f / Column;
 
-            float height = ScreenHeight * 1f / Row;
+            float height = Screen.height * 1f / Row;
 
-            for (int i = 0; i < Column; i++)
+
+            Debug.Log("计算得出每个矩形的长是：" +width+"像素 " + "   高是 " +height + "像素");
+            for (int j = 0; j < Row; j++)
             {
-                for (int j = 0; j < Row; j++)
+                for (int i = 0; i < Column; i++)
                 {
-                    Rect rect = new Rect(width* i +width/2,height * j+height/2, width,height);
+
+                    Rect rect = new Rect(width * i + width / 2, height * j + height / 2, width, height);
 
                     rects.Add(rect);
 
-                    GameObject go = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                    ConvertPixel cp = Instantiate(PrefabGameObject).GetComponent<ConvertPixel>();
 
-                    go.transform.position = Vector3.zero;
+                    // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Quad);
 
-                    ConvertPixel cp =  go.AddComponent<ConvertPixel>();
+                    cp.gameObject.transform.position = Vector3.zero;
 
-                    go.name = ((i+1) * (j+1)).ToString();
 
-                    cp.Init();
+
+                    cp.gameObject.name = ((i + 1) * (j + 1)).ToString();
+
+                    cp.Init(Material);
 
                     ConvertPixels.Add(cp);
 
-                    cp.SetPosSize(rect);
+                    cp.SetPosSize(rect, new Vector2(SpaceWidth, SpaceHeight));
 
                 }
             }
         }
         else
         {
-            
+
         }
 
         return rects;
@@ -88,13 +95,8 @@ public class ConvertPixelMabager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    void OnDrawGizmosSelected()
-    {
-        // Draw a semitransparent blue cube at the transforms position
-      //  Gizmos.color = new Color(1, 0, 0, 0.5f);
-        //Gizmos.DrawWireMesh(transform.position, new Vector3(1, 1, 1));
-    }
+
 }
