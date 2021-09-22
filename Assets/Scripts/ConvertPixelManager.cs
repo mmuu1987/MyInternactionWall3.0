@@ -37,6 +37,27 @@ public class ConvertPixelManager : MonoBehaviour
         HandleData();
     }
 
+   
+    public void SetPos()
+    {
+       List<PictureInfo> infos = new List<PictureInfo>();
+
+       List<Vector2> screenPosList= new List<Vector2>();
+
+       Vector2 pos= Vector2.zero;
+       foreach (PictureInfo pictureInfo in infos)
+       {
+           Vector2 temp = Vector2.zero;
+
+           Vector2 size = GlobalSetting.ScaleImageInHeight(pictureInfo.Size, 256);
+
+           temp = pos + new Vector2(size.x / 2, size.y / 2);
+
+           screenPosList.Add(temp);
+
+           pos = temp;
+       }
+    }
     /// <summary>
     /// 处理数据，得出图片在屏幕的个数
     /// </summary>
