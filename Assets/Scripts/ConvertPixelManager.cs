@@ -1,19 +1,29 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 
 public class ConvertPixelManager : MonoBehaviour
 {
 
-    
 
-    public float PictureWidth = 100f;
 
+
+    /// <summary>
+    /// 图片的高
+    /// </summary>
+    [Tooltip("图片的高,应用在高度模式")]
     public float PictureHeight = 100f;
-
+    /// <summary>
+    /// 两个图片的间隔距离的宽
+    /// </summary>
     public float SpaceWidth = 3f;
-
+    /// <summary>
+    /// 两个图片的间隔距离的高
+    /// </summary>
     public float SpaceHeight = 3f;
 
     public int Column = 50;
@@ -24,39 +34,100 @@ public class ConvertPixelManager : MonoBehaviour
 
     public GameObject PrefabGameObject;
 
+
+    public List<Texture2D> texs = new List<Texture2D>();
+
+    public List<PictureInfo> PictureInfo = new List<PictureInfo>();
+
+
     private List<ConvertPixel> ConvertPixels = new List<ConvertPixel>();
 
     /// <summary>
     /// 选择像素模式还是个数模式,像素模式是每个图片大小一致，个数模式为每个图片的宽不一致，高一致
     /// </summary>
+    [Tooltip("选择像素模式还是个数模式,高度模式是每个图片大小一致，个数模式为每个图片的宽不一致，高一致")]
     public bool IsSelectPixe = true;
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("窗口分辨率为：" +Screen.width +"   " +Screen.height);
+        Debug.Log("窗口分辨率为：" + Screen.width + "   " + Screen.height);
+        LoadImage();
+
         HandleData();
     }
 
-   
-    public void SetPos()
+    /// <summary>
+    /// 根据图片高度来设置图片位置序列
+    /// </summary>
+    public void SetPos(float targetHeight)
     {
-       List<PictureInfo> infos = new List<PictureInfo>();
+        List<PictureInfo> infos = PictureInfo;
 
-       List<Vector2> screenPosList= new List<Vector2>();
+        MaterialPropertyBlock props = new MaterialPropertyBlock();
 
-       Vector2 pos= Vector2.zero;
-       foreach (PictureInfo pictureInfo in infos)
-       {
-           Vector2 temp = Vector2.zero;
+        List<Vector2> screenPosList = new List<Vector2>();
 
-           Vector2 size = GlobalSetting.ScaleImageInHeight(pictureInfo.Size, 256);
+        Vector2 pos = new Vector2(0f, targetHeight / 2f);
+        int objNameIndex = 0;
+        float previousWidth = 0;//上一个图片的宽
+        int index = 0;
+        while (true)
+        {
+            if (index >= PictureInfo.Count)
+                index = 0;
 
-           temp = pos + new Vector2(size.x / 2, size.y / 2);
+            PictureInfo pictureInfo = PictureInfo[index];
 
-           screenPosList.Add(temp);
+            Vector2 size = GlobalSetting.ScaleImageInHeight(pictureInfo.Size, targetHeight);
 
-           pos = temp;
-       }
+            pictureInfo.Size = size;
+
+            if (pos.x > Screen.width)//如果超出屏幕，则高度加多一个targetHeight，并且重置X轴
+            {
+                pos.y += targetHeight;
+                pos.x = 0;
+                previousWidth = 0;
+            }
+
+            if (pos.y >= Screen.height) break;
+
+            pos = pos + new Vector2(size.x / 2 + previousWidth / 2, 0);//得到当前图片的位置
+
+            previousWidth = size.x;//赋予当前图片的看宽度给下个用 
+
+            screenPosList.Add(pos);
+
+            Rect rect = new Rect(pos, size);
+
+            ConvertPixel cp = Instantiate(PrefabGameObject).GetComponent<ConvertPixel>();
+
+
+
+            cp.gameObject.transform.position = Vector3.zero;
+
+
+
+            cp.gameObject.name = objNameIndex.ToString();
+
+            objNameIndex++;
+
+            cp.Init(Material);
+
+            ConvertPixels.Add(cp);
+
+            cp.SetPosSize(rect, new Vector2(SpaceWidth, SpaceHeight));
+
+            cp.SetInfo(pictureInfo, props);
+
+            index++;
+        }
+        foreach (PictureInfo pictureInfo in infos)
+        {
+
+
+          
+        }
+
     }
     /// <summary>
     /// 处理数据，得出图片在屏幕的个数
@@ -69,6 +140,8 @@ public class ConvertPixelManager : MonoBehaviour
             //像素模式下，需要知道屏幕分辨率和Column  row的个数
 
 
+
+
             Column += 1;//列数多一个，防止运动的时候有真空带
             Row += 1;//横数多一个，防止运动的时候有真空带
 
@@ -76,12 +149,19 @@ public class ConvertPixelManager : MonoBehaviour
 
             float height = Screen.height * 1f / Row;
 
+            int index = 0;
 
-            Debug.Log("计算得出每个矩形的长是：" +width+"像素 " + "   高是 " +height + "像素");
+            MaterialPropertyBlock props = new MaterialPropertyBlock();
+
+            Debug.Log("计算得出每个矩形的长是：" + width + "像素 " + "   高是 " + height + "像素");
             for (int j = 0; j < Row; j++)
             {
                 for (int i = 0; i < Column; i++)
                 {
+                    if (index >= PictureInfo.Count) index = 0;
+                    global::PictureInfo info = PictureInfo[index];
+
+                    info.Size = new Vector2(SpaceWidth,SpaceHeight);
 
                     Rect rect = new Rect(width * i + width / 2, height * j + height / 2, width, height);
 
@@ -89,11 +169,7 @@ public class ConvertPixelManager : MonoBehaviour
 
                     ConvertPixel cp = Instantiate(PrefabGameObject).GetComponent<ConvertPixel>();
 
-                    // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Quad);
-
                     cp.gameObject.transform.position = Vector3.zero;
-
-
 
                     cp.gameObject.name = ((i + 1) * (j + 1)).ToString();
 
@@ -103,16 +179,151 @@ public class ConvertPixelManager : MonoBehaviour
 
                     cp.SetPosSize(rect, new Vector2(SpaceWidth, SpaceHeight));
 
+
+                   
+
+                    cp.SetInfo(PictureInfo[index],props);
+
+                    index++;
                 }
             }
         }
         else
         {
-
+            SetPos(PictureHeight);
         }
 
         return rects;
     }
+
+    private void LoadImage()
+    {
+        if (texs.Count == 0)
+        {
+            string[] files = Directory.GetFiles(Application.streamingAssetsPath + "/Pictures");
+
+            texs = new List<Texture2D>();
+            foreach (string file in files)
+            {
+                if (file.Contains(".meta")) continue;
+
+                DirectoryInfo info = new DirectoryInfo(file);
+                int index = 0;
+                try
+                {
+                    string temp = info.Name;
+
+                    index = int.Parse(temp.Substring(0, 3)) - 1;//序号对应上，图片的是1开始，代码的是0开始
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.ToString());
+                    throw;
+                }
+
+
+                byte[] bytes = File.ReadAllBytes(file);
+
+                Texture2D tex = new Texture2D(1024, 1024);
+
+                tex.LoadImage(bytes);
+
+                tex.Apply();
+
+                Vector2 size = new Vector2(tex.width, tex.height);
+
+                PictureInfo.Add(new PictureInfo(info.Name, index, size));
+
+                tex = GlobalSetting.Resize(tex, 512, 512);
+
+                texs.Add(tex);
+
+
+            }
+
+            SetTexToGpu(texs.ToArray());
+        }
+        else
+        {
+            List<Texture2D> temps = new List<Texture2D>();
+            foreach (Texture2D texture2D in texs)
+            {
+
+                try
+                {
+                    string temp = texture2D.name;
+
+                    int index = int.Parse(temp.Substring(0, 3)) - 1;//序号对应上，图片的是1开始，代码的是0开始
+
+                    Vector2 size = new Vector2(texture2D.width, texture2D.height);
+
+                    PictureInfo.Add(new PictureInfo(texture2D.name, index, size));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.ToString());
+                    throw;
+                }
+
+                var tex = GlobalSetting.Resize(texture2D, 512, 512);
+
+
+
+
+                temps.Add(tex);
+            }
+
+            SetTexToGpu(temps.ToArray());
+        }
+
+
+
+
+
+    }
+
+    public void SetTexToGpu(Texture2D[] texs)
+    {
+        if (texs == null || texs.Length == 0)
+        {
+            enabled = false;
+            return;
+        }
+
+        if (SystemInfo.copyTextureSupport == CopyTextureSupport.None ||
+            !SystemInfo.supports2DArrayTextures)
+        {
+            enabled = false;
+            return;
+        }
+
+        Texture2DArray texArr = new Texture2DArray(texs[0].width, texs[0].width, texs.Length, texs[0].format, false, false);
+
+        for (int i = 0; i < texs.Length; i++)
+        {
+            // 以下两行都可以 //
+            //Graphics.CopyTexture(textures[i], 0, texArr, i);
+            Graphics.CopyTexture(texs[i], 0, 0, texArr, i, 0);
+        }
+
+        texArr.wrapMode = TextureWrapMode.Clamp;
+        texArr.filterMode = FilterMode.Trilinear;
+
+        Material.SetTexture("_TexArr", texArr);
+
+        foreach (Texture2D texture2D in texs)
+        {
+            Destroy(texture2D);
+        }
+
+        foreach (PictureInfo info in PictureInfo)
+        {
+            //Debug.Log(info.ToString());
+        }
+
+        Resources.UnloadUnusedAssets();
+    }
+
     // Update is called once per frame
     void Update()
     {

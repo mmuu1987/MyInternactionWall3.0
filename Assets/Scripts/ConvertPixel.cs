@@ -33,10 +33,7 @@ public class ConvertPixel : MonoBehaviour
 
     public int PictureId;
 
-    /// <summary>
-    /// 原本的缩放比例
-    /// </summary>
-    private Vector3 _orinigalScale;
+   
     /// <summary>
     /// 原本的缩放比例
     /// </summary>
@@ -123,11 +120,6 @@ public class ConvertPixel : MonoBehaviour
 
 
     }
-
-    public Vector2 GetScreenPos()
-    {
-        return Vector2.zero;
-    }
     /// <summary>
     /// 根据屏幕位置设置quad的3D位置
     /// </summary>
@@ -182,11 +174,8 @@ public class ConvertPixel : MonoBehaviour
         SetScreenSize(size);
     }
 
-    public void SetInfo(PictureInfo info,  MaterialPropertyBlock prop)
+    public void SetInfo(PictureInfo info,  MaterialPropertyBlock prop )
     {
-
-        // this.transform.position = new Vector3(pos.x-9.5f, pos.y-2.4125f, this.transform.position.z);
-
         _cacheTransform = new GameObject(info.Name).transform;
 
         _cacheTransform.position = this.transform.position;
@@ -203,41 +192,28 @@ public class ConvertPixel : MonoBehaviour
        
        
         PictureId = info.Index;
-       
 
-      
 
-        _orinigalSize = GlobalSetting.ShowImage(info.Size,new Vector2(1024f,1024f));
 
-        float scaleWidth = _orinigalSize.x / 1024f;
 
-        float scaleHeight = _orinigalSize.y / 1024f;
+        _orinigalSize = this.transform.localScale;
 
-        _orinigalScale = new Vector3(scaleWidth, scaleHeight, 1f);
-
-       
+     
 
         //Debug.Log(n);
         _materialPropertyBlock.SetInt("_Index", PictureId);
-        _materialPropertyBlock.SetFloat("_Flag", 1);
+        _materialPropertyBlock.SetFloat("_Flag", 0);
         _materialPropertyBlock.SetFloat("_Width", _orinigalSize.x);
         _materialPropertyBlock.SetFloat("_Height", _orinigalSize.y);
-        //_materialPropertyBlock.SetTexture("_MainTex", PictureManager.Instance.texs[PictureId]);
+       
         MeshRenderer.SetPropertyBlock(_materialPropertyBlock);
-        //props.SetColor("_Color", Random.ColorHSV());
+      
 
         _pictureInfo = info;
 
 
 
         this.name = PictureId.ToString();
-
-
-
-
-
-
-
     }
 
 #if UNITY_EDITOR
