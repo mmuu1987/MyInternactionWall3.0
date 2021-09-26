@@ -382,7 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6f8ea6f3302fd847948cdbb5fb026dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PictureHeight: 100
+  PictureHeight: 256
   SpaceWidth: 5
   SpaceHeight: 5
   Column: 76
