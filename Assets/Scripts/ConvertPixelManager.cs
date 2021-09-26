@@ -97,13 +97,13 @@ public class ConvertPixelManager : MonoBehaviour
             {
 
                 rows++;
-                _maxScreenPos.Add(rows, size.x + previousWidth / 2);
+                _maxScreenPos.Add(rows, pos.x + previousWidth / 2);
                 Debug.Log("row is" + rows + "    pos is " + pos.x + previousWidth / 2 + "    column is " + column);
 
                 pos.y += targetHeight;
                 pos.x = 0;
                 previousWidth = 0;
-                column = 0;
+                column = 1;
 
 
             }
@@ -112,7 +112,7 @@ public class ConvertPixelManager : MonoBehaviour
 
             pos = pos + new Vector2(size.x / 2 + previousWidth / 2, 0);//得到当前图片的位置
             column++;
-            Debug.Log("column  is " + column);
+           // Debug.Log("column  is " + column);
 
             previousWidth = size.x;//赋予当前图片的看宽度给下个用 
 
@@ -138,7 +138,7 @@ public class ConvertPixelManager : MonoBehaviour
 
             cp.SetPosSize(rect, new Vector2(SpaceWidth, SpaceHeight));
 
-            cp.SetInfo(pictureInfo, props);
+            cp.SetInfo(pictureInfo, props, rows+1, column+1);
 
 
             //if (i == Column - 1)
@@ -149,14 +149,30 @@ public class ConvertPixelManager : MonoBehaviour
 
             index++;
         }
-        foreach (PictureInfo pictureInfo in infos)
-        {
 
 
-          
-        }
-
+        SetMaxScreenPos();
+        
+      
     }
+
+    public void SetMaxScreenPos()
+    {
+        foreach (ConvertPixel convertPixel in ConvertPixels)
+        {
+            foreach (KeyValuePair<int, float> keyValuePair in _maxScreenPos)
+            {
+                if (keyValuePair.Key == convertPixel.Row)
+                {
+                    convertPixel.MaxScreenPos = keyValuePair.Value;
+                    Debug.Log("MaxScreenPos is" + convertPixel.MaxScreenPos);
+                    break;
+                }
+            }
+        }
+       
+    }
+
     /// <summary>
     /// 处理数据，得出图片在屏幕的个数
     /// </summary>
@@ -214,7 +230,7 @@ public class ConvertPixelManager : MonoBehaviour
 
                    
 
-                    cp.SetInfo(PictureInfo[index],props);
+                    cp.SetInfo(PictureInfo[index],props,i+1,j+1);
 
                     if (i == Column - 1)
                     {

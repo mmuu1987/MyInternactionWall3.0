@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -59,7 +60,20 @@ public class ConvertPixel : MonoBehaviour
     /// </summary>
     private MoveType _moveType = MoveType.None;
 
+    /// <summary>
+    /// 所在的列
+    /// </summary>
+    public int Column;
 
+    /// <summary>
+    /// 所在的横
+    /// </summary>
+    public int Row;
+
+    /// <summary>
+    /// 所在行的最大的屏幕位置
+    /// </summary>
+    public float MaxScreenPos;
     // Start is called before the first frame update
     void Start()
     {
@@ -203,8 +217,14 @@ public class ConvertPixel : MonoBehaviour
         SetScreenSize(size);
     }
 
-    public void SetInfo(PictureInfo info,  MaterialPropertyBlock prop )
+    public void SetInfo(PictureInfo info,  MaterialPropertyBlock prop,int row,int column )
     {
+
+
+        Column = column;
+
+        Row = row;
+
         CacheTransform = new GameObject(info.Name).transform;
 
         CacheTransform.position = this.transform.position;
@@ -247,7 +267,7 @@ public class ConvertPixel : MonoBehaviour
         GetInitDis(15f,false,_oriniglaPos);
     }
 
-
+   
 
     /// <summary>
     /// 是否开启图片移动
@@ -260,7 +280,7 @@ public class ConvertPixel : MonoBehaviour
     /// <summary>
     /// 图片向左移动的速度
     /// </summary>
-    private float _leftSpeed = 2f;
+    private float _leftSpeed = 5f;
     /// <summary>
     /// 图片的透明度
     /// </summary>
@@ -457,7 +477,7 @@ public class ConvertPixel : MonoBehaviour
             {
                 //_widget.transform.localPosition = new Vector3(_widget.transform.localPosition)
                 //得到屏幕最右边的坐标
-                Vector3 v = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width+ ScreenSize.x/2f, screenPos.y, Mathf.Abs(Camera.main.transform.position.z)));
+                Vector3 v = Camera.main.ScreenToWorldPoint(new Vector3(MaxScreenPos - ScreenSize.x/2f, screenPos.y, Mathf.Abs(Camera.main.transform.position.z)));
 
                 Vector3 tempPosition = v;//这里必须把转换到得世界坐标变换成某个物体的局部坐标
 
