@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -9,15 +10,8 @@ using UnityEngine.Rendering;
 /// 把quad 的在3d空间的size转为屏幕尺寸,目前用transform.localscale代表像素尺寸
 /// 默认Z轴的位置为0
 /// </summary>
-public class ConvertPixel : MonoBehaviour
+public class MyMotionTexture : MotionTextureBase
 {
-    public Transform CacheTransform { get; private set; }
-
-    private bool _isInitEnd = false;
-
-    private Material _curMaterial;
-
-    
 
     private MaterialPropertyBlock _materialPropertyBlock;
 
@@ -41,7 +35,7 @@ public class ConvertPixel : MonoBehaviour
     /// 图片所在横的最远图片的位置，分辨率为单位
     /// </summary>
     private float _maxScreenPos;
-    public MeshRenderer MeshRenderer { get; private set; }
+  
 
     public int PictureId;
 
@@ -51,10 +45,7 @@ public class ConvertPixel : MonoBehaviour
     /// </summary>
     private Vector3 _orinigalSize;
 
-    /// <summary>
-    /// 该面片所代表的的屏幕尺寸
-    /// </summary>
-    public Vector2 ScreenSize { get; private set; }
+   
 
     /// 图片的变化类型，运动类型,update里面每帧判断啥类型，就做出啥类型相关的动作
     /// </summary>
@@ -97,130 +88,10 @@ public class ConvertPixel : MonoBehaviour
         UpdateCheckScreenPosition();
     }
 
-    public void Init(Material mat)
-    {
-        if (_isInitEnd) return;
-        _isInitEnd = true;
-        CacheTransform = this.transform;
-
-
-
-        if (Math.Abs(CacheTransform.localScale.z - 1f) > Mathf.Epsilon)
-        {
-            throw new UnityException("目前仅支持z缩放为1");
-        }
-
-        MeshRenderer = this.GetComponent<MeshRenderer>();
-
-        _curMaterial = mat;
-        MeshRenderer.material = mat;
-       
-      
-    }
-
-    
-    /// <summary>
-    /// 获取该面片的屏幕尺寸,和屏幕位置
-    /// </summary>
-    public Rect GetScreenSizePos()
-    {
-        Vector3 worldPos = CacheTransform.position;
-
-        Vector3 worldSize = CacheTransform.localScale;
-
-        //转化到屏幕空间的Rect
-        Vector2 screenCenterPos = Camera.main.WorldToScreenPoint(worldPos);
-
-
-
-        Vector2 leftUpPosWorld = worldPos + new Vector3(-worldSize.x / 2, worldSize.y / 2);
-        Vector2 leftUpScreenPos = Camera.main.WorldToScreenPoint(leftUpPosWorld);
-
-
-        Vector2 RightUpPosWorld = worldPos + new Vector3(worldSize.x / 2, worldSize.y / 2);
-        Vector2 RightUpScreenPos = Camera.main.WorldToScreenPoint(RightUpPosWorld);
-
-
-        Vector2 RightDownPosWorld = worldPos + new Vector3(worldSize.x / 2, -worldSize.y / 2);
-        Vector2 RightDownScreenPos = Camera.main.WorldToScreenPoint(RightDownPosWorld);
-
-
-
-        float width = RightUpScreenPos.x - leftUpScreenPos.x;
-
-        float height = RightUpScreenPos.y - RightDownScreenPos.y;
-
-        Rect screenRect = new Rect(screenCenterPos,new Vector2(width,height));
-
-
-
-        return screenRect;
-
-
-
-
-
-    }
-    /// <summary>
-    /// 根据屏幕位置设置quad的3D位置
-    /// </summary>
-    /// <param name="screenPos"></param>
-    public void SetScreenPos(Vector2 screenPos)
-    {
-        Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, Mathf.Abs(Camera.main.transform.position.z)));
-
-        CacheTransform.transform.position = worldPos;
-    }
-    /// <summary>
-    /// 根据像素尺寸，设置quad的3D大小
-    /// </summary>
-    /// <param name="size"></param>
-
-    public void SetScreenSize(Vector2 size)
-    {
-        //先计算屏幕 0 0点在世界坐标的位置
-        Vector2 zeroWorldPos = Camera.main.ScreenToWorldPoint(new Vector3(0f,0f, Mathf.Abs(Camera.main.transform.position.z)));
-
-        //Debug.Log("zeroWorldPos is " +zeroWorldPos);
-        //再计算这个尺寸在世界的位置
-        Vector2 sizeWorldPos = Camera.main.ScreenToWorldPoint(new Vector3(size.x, size.y, Mathf.Abs(Camera.main.transform.position.z)));
-
-        float worldScaleX = Mathf.Abs( sizeWorldPos.x - zeroWorldPos.x);
-
-        float worldScaleY = Mathf.Abs(sizeWorldPos.y - zeroWorldPos.y);
-
-        this.CacheTransform.localScale = new Vector3(worldScaleX,worldScaleY,1);//默认缩放为1
-
-
-        ScreenSize = size;
-    }
-
-
-
-  
-    /// <summary>
-    /// 设置quad的屏幕位置和尺寸
-    /// </summary>
-    /// <param name="rect"></param>
-    public void SetPosSize(Rect rect,Vector2 space)
-    {
-        SetScreenPos(rect.position);
-
-
-
-        Vector2 size;
-
-        if (rect.size.x > space.x && rect.size.y > space.y)
-            size = new Vector2(rect.size.x - space.x, rect.size.y - space.y);
-        else size = rect.size;
-
-        SetScreenSize(size);
-    }
+   
 
     public void SetInfo(PictureInfo info,  MaterialPropertyBlock prop,int row,int column )
     {
-
-
         Column = column;
 
         Row = row;
@@ -280,7 +151,7 @@ public class ConvertPixel : MonoBehaviour
     /// <summary>
     /// 图片向左移动的速度
     /// </summary>
-    private float _leftSpeed = 5f;
+    private float _leftSpeed = 1f;
     /// <summary>
     /// 图片的透明度
     /// </summary>
@@ -318,7 +189,7 @@ public class ConvertPixel : MonoBehaviour
             position = Vector3.Lerp(CacheTransform.position, _oriniglaPos, Time.deltaTime * _leftSpeed);
         else
         {
-            _oriniglaPos.x -= 0.01f;
+            _oriniglaPos.x -= 0.001f;
             position = Vector3.Lerp(CacheTransform.position, _oriniglaPos, Time.deltaTime * _leftSpeed);
         }
 
@@ -391,13 +262,6 @@ public class ConvertPixel : MonoBehaviour
                 count++;//进入到这里，就证明进入到了圆的范围
             }
         }
-
-
-
-
-
-
-
         //处理图片在多个球体内的逻辑
         if (count > 0)//有进入圆球范围内
         {
@@ -462,6 +326,8 @@ public class ConvertPixel : MonoBehaviour
 
     }
 
+    
+
     /// <summary>
     /// 检查图片是否越出屏幕外边，如果跃出，则重新布局到右边屏幕外边
     /// </summary>
@@ -470,6 +336,8 @@ public class ConvertPixel : MonoBehaviour
         if (_isMove)
         {
             Vector3 worldPosition = CacheTransform.position;//先把坐标变成世界坐标
+
+            float xTemp = _oriniglaPos.x - CacheTransform.position.x;//得到两个位置的X轴的距离差
 
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);//该方法规定参数必须是世界坐标
 
@@ -487,6 +355,9 @@ public class ConvertPixel : MonoBehaviour
 
                 _oriniglaPos = tempPosition;
 
+                _oriniglaPos.x += xTemp;//复位到左边之后我们要把这个距离差也带上去，否则会出现偏差
+
+                //  ChangeMoveSpeed();
 
             }
         }

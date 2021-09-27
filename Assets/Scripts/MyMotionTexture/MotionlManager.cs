@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 
-public class ConvertPixelManager : MonoBehaviour
+public class MotionlManager : MonoBehaviour
 {
 
 
@@ -40,7 +40,7 @@ public class ConvertPixelManager : MonoBehaviour
     public List<PictureInfo> PictureInfo = new List<PictureInfo>();
 
 
-    private List<ConvertPixel> ConvertPixels = new List<ConvertPixel>();
+    private List<MyMotionTexture> ConvertPixels = new List<MyMotionTexture>();
 
     /// <summary>
     /// 选择像素模式还是个数模式,像素模式是每个图片大小一致，个数模式为每个图片的宽不一致，高一致
@@ -120,7 +120,7 @@ public class ConvertPixelManager : MonoBehaviour
 
             Rect rect = new Rect(pos, size);
 
-            ConvertPixel cp = Instantiate(PrefabGameObject).GetComponent<ConvertPixel>();
+            MyMotionTexture cp = Instantiate(PrefabGameObject).GetComponent<MyMotionTexture>();
 
 
 
@@ -158,7 +158,7 @@ public class ConvertPixelManager : MonoBehaviour
 
     public void SetMaxScreenPos()
     {
-        foreach (ConvertPixel convertPixel in ConvertPixels)
+        foreach (MyMotionTexture convertPixel in ConvertPixels)
         {
             foreach (KeyValuePair<int, float> keyValuePair in _maxScreenPos)
             {
@@ -215,7 +215,7 @@ public class ConvertPixelManager : MonoBehaviour
 
                     rects.Add(rect);
 
-                    ConvertPixel cp = Instantiate(PrefabGameObject).GetComponent<ConvertPixel>();
+                    MyMotionTexture cp = Instantiate(PrefabGameObject).GetComponent<MyMotionTexture>();
 
                     cp.gameObject.transform.position = Vector3.zero;
 
