@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 执行一些底层的操作，比如坐标换算，从  3D坐标换算到2D坐标，或者2D坐标换算到3D坐标
+///  把quad 的在3d空间的size转为屏幕尺寸,目前用transform.localscale代表像素尺寸
+/// 默认Z轴的位置为0
 /// </summary>
 public class TextureBase : MonoBehaviour
 {

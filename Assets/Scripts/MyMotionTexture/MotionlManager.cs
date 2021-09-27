@@ -42,7 +42,10 @@ public class MotionlManager : MonoBehaviour
 
     private List<MyMotionTexture> ConvertPixels = new List<MyMotionTexture>();
 
-    /// <summary>
+
+    public List<Circular> Circulars= new List<Circular>();
+
+
     /// 选择像素模式还是个数模式,像素模式是每个图片大小一致，个数模式为每个图片的宽不一致，高一致
     /// </summary>
     [Tooltip("选择像素模式还是个数模式,高度模式是每个图片大小一致，个数模式为每个图片的宽不一致，高一致")]
@@ -140,7 +143,7 @@ public class MotionlManager : MonoBehaviour
 
             cp.SetInfo(pictureInfo, props, rows+1, column+1);
 
-
+            cp.CircularList = Circulars;
             //if (i == Column - 1)
             //{
             //    Debug.Log(i + "   " + width * (i + 1));

@@ -7,60 +7,13 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// 把quad 的在3d空间的size转为屏幕尺寸,目前用transform.localscale代表像素尺寸
-/// 默认Z轴的位置为0
+///
 /// </summary>
 public class MyMotionTexture : MotionTextureBase
 {
-
-    private MaterialPropertyBlock _materialPropertyBlock;
-
-    /// <summary>
-    /// 初始化的时候的原本的位置
-    /// </summary>
-    private Vector3 _oriniglaPos;
-
-    private PictureInfo _pictureInfo;
-
-    /// <summary>
-    /// 图片所在的行
-    /// </summary>
-    private int _indexColumn;
-    /// <summary>
-    /// 图片所在的列
-    /// </summary>
-    private int _indexRow;
-
-    /// <summary>
-    /// 图片所在横的最远图片的位置，分辨率为单位
-    /// </summary>
-    private float _maxScreenPos;
-  
-
-    public int PictureId;
-
-   
-    /// <summary>
-    /// 原本的缩放比例
-    /// </summary>
-    private Vector3 _orinigalSize;
-
-   
-
     /// 图片的变化类型，运动类型,update里面每帧判断啥类型，就做出啥类型相关的动作
     /// </summary>
     private MoveType _moveType = MoveType.None;
-
-    /// <summary>
-    /// 所在的列
-    /// </summary>
-    public int Column;
-
-    /// <summary>
-    /// 所在的横
-    /// </summary>
-    public int Row;
-
     /// <summary>
     /// 所在行的最大的屏幕位置
     /// </summary>
@@ -90,52 +43,11 @@ public class MyMotionTexture : MotionTextureBase
 
    
 
-    public void SetInfo(PictureInfo info,  MaterialPropertyBlock prop,int row,int column )
+    public override void SetInfo(PictureInfo info,  MaterialPropertyBlock prop,int row,int column )
     {
-        Column = column;
-
-        Row = row;
-
-        CacheTransform = new GameObject(info.Name).transform;
-
-        CacheTransform.position = this.transform.position;
-
-        _oriniglaPos = this.transform.position;
-
-        CacheTransform.parent = this.transform.parent;
-
-        this.transform.parent = CacheTransform;
-
-
-        _materialPropertyBlock = prop;
-        //默认初始化的时候前面的就是新海报  
-       
-       
-        PictureId = info.Index;
-
-
-
-
-        _orinigalSize = this.transform.localScale;
-
-        _scale = this.transform.localScale;
-
-        //Debug.Log(n);
-        _materialPropertyBlock.SetInt("_Index", PictureId);
-        _materialPropertyBlock.SetFloat("_Flag", 0);
-        _materialPropertyBlock.SetFloat("_Width", _orinigalSize.x);
-        _materialPropertyBlock.SetFloat("_Height", _orinigalSize.y);
-       
-        MeshRenderer.SetPropertyBlock(_materialPropertyBlock);
-      
-
-        _pictureInfo = info;
-
-
-
-        this.name = PictureId.ToString();
+       base.SetInfo(info,prop, row, column);
         //GetInitDis(15f, true, _originPositions[i]);
-        GetInitDis(15f,false,_oriniglaPos);
+        GetInitDis(15f,false);
     }
 
    
@@ -169,13 +81,7 @@ public class MyMotionTexture : MotionTextureBase
     private bool _isMove = false;
 
 
-    /// <summary>
-    /// 缩放系数
-    /// </summary>
-    private Vector3 _scale = Vector3.zero;
-
-
-    private List<Circular> _circularList = new List<Circular>();
+    public List<Circular> CircularList = new List<Circular>();
 
     /// <summary>
     /// 更新图片向左流动
@@ -198,7 +104,7 @@ public class MyMotionTexture : MotionTextureBase
         //进入了圆形的次数
         int count = 0;
 
-        foreach (Circular item in _circularList)
+        foreach (Circular item in CircularList)
         {
             float d1 = (pos - item.CacheTransform.localPosition).sqrMagnitude;
 
@@ -271,10 +177,10 @@ public class MyMotionTexture : MotionTextureBase
         {
             CacheTransform.position = position;
 
-            _scale = Vector3.Lerp(_scale, Vector3.one, Time.deltaTime * 2f);
+            Scale = Vector3.Lerp(Scale, OrinigalSize, Time.deltaTime * 2f);
 
             //缩放渐变
-            CacheTransform.localScale = Vector3.Lerp(CacheTransform.localScale,  _scale, Time.deltaTime * 2f);
+            CacheTransform.localScale = Scale;
         }
     }
 
@@ -284,23 +190,22 @@ public class MyMotionTexture : MotionTextureBase
     /// <param name="f">距离系数</param>
     /// <param name="isLeftRigt">是否左右运动</param>
     /// <param name="originPosition">原始位置</param>
-    public void GetInitDis(float f, bool isLeftRigt, Vector3 originPosition)
+    public void GetInitDis(float f, bool isLeftRigt)
     {
-        //_oriniglaPos = originPosition;
 
-      
+       
 
-        //if (isLeftRigt)
-        //{
-        //    if (CacheTransform.localPosition.y >= 0)
-        //        CacheTransform.localPosition = new Vector3(Mathf.Abs(_oriniglaPos.y * f) + _oriniglaPos.x, _oriniglaPos.y, _oriniglaPos.z);
-        //    else
-        //        CacheTransform.localPosition = new Vector3(-(Mathf.Abs(_oriniglaPos.y * f) - _oriniglaPos.x), _oriniglaPos.y, _oriniglaPos.z);
-        //}
-        //else
-        //    CacheTransform.localPosition = new Vector3(Mathf.Abs(_oriniglaPos.y * f) + _oriniglaPos.x, _oriniglaPos.y, _oriniglaPos.z);
+        if (isLeftRigt)
+        {
+            if (CacheTransform.position.y >= 0)
+                CacheTransform.position = new Vector3(Mathf.Abs(_oriniglaPos.y * f) + _oriniglaPos.x, _oriniglaPos.y, _oriniglaPos.z);
+            else
+                CacheTransform.position = new Vector3(-(Mathf.Abs(_oriniglaPos.y * f) - _oriniglaPos.x), _oriniglaPos.y, _oriniglaPos.z);
+        }
+        else
+            CacheTransform.position = new Vector3(Mathf.Abs(_oriniglaPos.y * f) + _oriniglaPos.x, _oriniglaPos.y, _oriniglaPos.z);
 
-        CacheTransform.localScale = Vector3.zero;//初始化尺寸的大小为0
+        // CacheTransform.position = Vector3.zero;//初始化尺寸的大小为0
 
         _isOpenPictureMove = true;
 

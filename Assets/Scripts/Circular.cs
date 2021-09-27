@@ -45,10 +45,9 @@ public class Circular : MonoBehaviour
 
         tex = this.GetComponent<RawImage>();
 
-        Vector2 size = tex.rectTransform.sizeDelta;
+        Vector2 size = this.transform.localScale;
 
-        tex.rectTransform.sizeDelta = new Vector2(0,size.y);
-
+       this.transform.localScale = Vector3.zero;
         Radius = 0f;
     }
     void Start()
@@ -67,10 +66,10 @@ public class Circular : MonoBehaviour
     /// </summary>
     void ZoomSize()
     {
-        Radius = Mathf.Lerp(Radius, 600, Time.deltaTime * 8f);
-        Vector2 size = tex.rectTransform.sizeDelta;
+        Radius = Mathf.Lerp(Radius, 3, Time.deltaTime * 5f);
+        Vector3 size = this.transform.localScale;
 
-        float x = Mathf.Lerp(size.x, 1000, Time.deltaTime * 8f);
-        tex.rectTransform.sizeDelta = new Vector2(x,size.y);
+        float x = Mathf.Lerp(size.x, 5, Time.deltaTime * 5f);
+        this.transform.localScale= new Vector3(x,size.y,size.z);
     }
 }
