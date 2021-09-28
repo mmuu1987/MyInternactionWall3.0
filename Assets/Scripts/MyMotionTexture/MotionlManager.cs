@@ -101,7 +101,7 @@ public class MotionlManager : MonoBehaviour
 
                 rows++;
                 _maxScreenPos.Add(rows, pos.x + previousWidth / 2);
-                Debug.Log("row is" + rows + "    pos is " + pos.x + previousWidth / 2 + "    column is " + column);
+                //Debug.Log("row is" + rows + "    pos is " + pos.x + previousWidth / 2 + "    column is " + column);
 
                 pos.y += targetHeight;
                 pos.x = 0;
