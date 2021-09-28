@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 负责初始化数据
+/// 负责表现初始化数据
 /// </summary>
 public class MotionTextureBase : TextureBase
 {
@@ -127,7 +127,7 @@ public class MotionTextureBase : TextureBase
 
 
 
-        this.name = PictureId.ToString();
+        this.name = (Row * column).ToString();
     }
 
     

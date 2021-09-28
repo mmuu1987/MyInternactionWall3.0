@@ -18,6 +18,11 @@ public class MyMotionTexture : MotionTextureBase
     /// 所在行的最大的屏幕位置
     /// </summary>
     public float MaxScreenPos;
+
+    /// <summary>
+    /// 是否跟圆交互，判定不交互的条件为原始点跟图片原点的距离是否小于一个数值
+    /// </summary>
+    private bool _isCircleInteraction;
     // Start is called before the first frame update
     void Start()
     {
@@ -97,6 +102,11 @@ public class MyMotionTexture : MotionTextureBase
         {
             _oriniglaPos.x -= 0.001f;
             position = Vector3.Lerp(CacheTransform.position, _oriniglaPos, Time.deltaTime * _leftSpeed);
+
+            if (this.name == "500")
+            {
+                Debug.Log("t is:" + Time.deltaTime * _leftSpeed+ "  CacheTransform.position is:" + CacheTransform.position+ "    _oriniglaPos is:" + _oriniglaPos + "    position is:" + position);
+            }
         }
 
         Vector3 pos = position;
@@ -106,7 +116,7 @@ public class MyMotionTexture : MotionTextureBase
 
         foreach (Circular item in CircularList)
         {
-            float d1 = (pos - item.CacheTransform.localPosition).sqrMagnitude;
+            float d1 = (pos - item.CacheTransform.position).sqrMagnitude;
 
             if (d1 <= item.Radius * item.Radius)
             {
@@ -137,7 +147,7 @@ public class MyMotionTexture : MotionTextureBase
                         CacheTransform.localScale = Vector3.Lerp(CacheTransform.localScale, Vector3.one * floatTemp, Time.deltaTime * 2f);// Vector3.Lerp(CacheTransform.localScale, Vector3.one * floatTemp, Time.deltaTime * 5f);
                     }
                 }
-                else if (angle == 0 || angle == 180)//暂写出这个，很小概率出现这个逻辑,读者可以忽略这段代码
+                else if (angle == 0 || angle == 180)//暂写出这个，很小概率出现这个逻辑,可以忽略这段代码
                 {
                     Quaternion rotation = Quaternion.Euler(0, 0, 180f);
 
@@ -175,6 +185,7 @@ public class MyMotionTexture : MotionTextureBase
         }
         else
         {
+
             CacheTransform.position = position;
 
             Scale = Vector3.Lerp(Scale, OrinigalSize, Time.deltaTime * 2f);
