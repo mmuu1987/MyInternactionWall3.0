@@ -109,7 +109,7 @@ public class MyMotionTexture : MotionTextureBase
             }
         }
 
-        Vector3 pos = position;
+        Vector3 pos = position; 
 
         //进入了圆形的次数
         int count = 0;
