@@ -90,25 +90,13 @@ public class MotionTextureBase : TextureBase
         Column = column;
 
         Row = row;
-
-       
-
       
         _oriniglaPos = this.transform.position;
-
-      
-
-       
-
 
         MaterialPropertyBlock = prop;
         //默认初始化的时候前面的就是新海报  
 
-
         PictureId = info.Index;
-
-
-
 
         OrinigalSize = this.transform.localScale;
 
@@ -122,12 +110,9 @@ public class MotionTextureBase : TextureBase
 
         MeshRenderer.SetPropertyBlock(MaterialPropertyBlock);
 
-
         PictureInfo = info;
 
-
-
-        this.name = (Row * column).ToString();
+      //  this.name = (Row * column).ToString();
     }
 
     

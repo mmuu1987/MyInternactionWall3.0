@@ -89,7 +89,7 @@ public class MotionlManager : MonoBehaviour
                 index = 0;
                
             }
-
+            
             PictureInfo pictureInfo = PictureInfo[index];
 
             Vector2 size = GlobalSetting.ScaleImageInHeight(pictureInfo.Size, targetHeight);
@@ -387,7 +387,18 @@ public class MotionlManager : MonoBehaviour
 
     }
 
+   
+#if UNITY_EDITOR
+    //private void OnGUI()
+    //{
+    //    if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test"))
+    //    {
+    //        Debug.Log(MyLerp(1f,2f, S));
 
+    //        Debug.Log(Mathf.Lerp(1f,2f, S));
+    //    }
+    //}
+#endif
 }
 public enum MoveType
 {

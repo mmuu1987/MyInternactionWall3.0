@@ -278,7 +278,41 @@ public static class GlobalSetting
 
 
     }
+    /// <summary>
+    /// 获得世界空间中长度在屏幕的映射，也就是屏幕长度
+    /// </summary>
+    public static float GetScreenSizePos(float size)
+    {
+       
 
+
+
+       
+        Vector2 leftUpScreenPos = Camera.main.WorldToScreenPoint(new Vector3(0f,0f,0f));
+
+
+        
+        Vector2 RightUpScreenPos = Camera.main.WorldToScreenPoint(new Vector3(size, 0f, 0f));
+
+
+
+
+
+        float width = RightUpScreenPos.x - leftUpScreenPos.x;
+
+       
+
+       
+
+
+
+        return width;
+
+
+
+
+
+    }
     public static List<Vector2> Sample2D(int seed, float width, float height, float r, int k = 30)
     {
         // STEP 0

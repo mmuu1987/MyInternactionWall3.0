@@ -88,6 +88,8 @@ public class MyMotionTexture : MotionTextureBase
 
     public List<Circular> CircularList = new List<Circular>();
 
+    //进入了圆形的次数
+    private int _enterCirclecount = 0;
     /// <summary>
     /// 更新图片向左流动
     /// </summary>
@@ -103,16 +105,15 @@ public class MyMotionTexture : MotionTextureBase
             _oriniglaPos.x -= 0.001f;
             position = Vector3.Lerp(CacheTransform.position, _oriniglaPos, Time.deltaTime * _leftSpeed);
 
-            if (this.name == "500")
-            {
-                Debug.Log("t is:" + Time.deltaTime * _leftSpeed+ "  CacheTransform.position is:" + CacheTransform.position+ "    _oriniglaPos is:" + _oriniglaPos + "    position is:" + position);
-            }
+            //if (this.name == "500")
+            //{
+            //    Debug.Log("t is:" + Time.deltaTime * _leftSpeed+ "  CacheTransform.position is:" + CacheTransform.position+ "    _oriniglaPos is:" + _oriniglaPos + "    position is:" + position);
+            //}
         }
 
-        Vector3 pos = position; 
+        Vector3 pos = position;
 
-        //进入了圆形的次数
-        int count = 0;
+        _enterCirclecount = 0;
 
         foreach (Circular item in CircularList)
         {
@@ -175,11 +176,11 @@ public class MyMotionTexture : MotionTextureBase
                 }
                 #endregion
 
-                count++;//进入到这里，就证明进入到了圆的范围
+                _enterCirclecount++;//进入到这里，就证明进入到了圆的范围
             }
         }
         //处理图片在多个球体内的逻辑
-        if (count > 0)//有进入圆球范围内
+        if (_enterCirclecount > 0)//有进入圆球范围内
         {
             CacheTransform.position = pos;
         }
@@ -203,9 +204,6 @@ public class MyMotionTexture : MotionTextureBase
     /// <param name="originPosition">原始位置</param>
     public void GetInitDis(float f, bool isLeftRigt)
     {
-
-       
-
         if (isLeftRigt)
         {
             if (CacheTransform.position.y >= 0)
@@ -249,29 +247,56 @@ public class MyMotionTexture : MotionTextureBase
     /// </summary>
     private void UpdateCheckScreenPosition()
     {
-        if (_isMove)
+        if (_isMove && _enterCirclecount<=0)
         {
-            Vector3 worldPosition = CacheTransform.position;//先把坐标变成世界坐标
 
-            float xTemp = _oriniglaPos.x - CacheTransform.position.x;//得到两个位置的X轴的距离差
+            Vector3 dir = Vector3.Normalize(CacheTransform.position - _oriniglaPos);
 
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);//该方法规定参数必须是世界坐标
+            float dotVal = Vector3.Dot(Vector3.right,dir );
 
-            if (screenPos.x+ScreenSize.x/2f  <= 0f)//证明从左边跃出屏幕,这里加多一个常量，因为是3D空间，测算图片的屏幕空间和大小需要麻烦操作，这里直接人工操作 
+            if (Mathf.Abs(dotVal) < 1f)//判断是否水平跟随运动点
+            {
+                return;
+            }
+
+            //先把坐标变成世界坐标
+            Vector3 worldPosition = _oriniglaPos;
+
+            //得到两个位置的X轴的距离差
+            float xTemp = _oriniglaPos.x - CacheTransform.position.x;
+
+            //得到两个位置的X轴的屏幕的距离
+            float xScreenTemp = GlobalSetting.GetScreenSizePos(xTemp);
+
+
+            //该方法规定参数必须是世界坐标
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
+
+
+            //图片最左边的点的X坐标
+            float screenMinLeft = screenPos.x + ScreenSize.x / 2f - xScreenTemp;
+
+            //图片越过左边0线后，重置的X轴位置
+            float screenMaxRight = MaxScreenPos + xScreenTemp - ScreenSize.x / 2f;
+
+            //最终回到右边的位置
+            float screenRealPos = screenMaxRight + screenMinLeft;
+
+            if (screenMinLeft <= 0f)//证明从左边跃出屏幕,这里加多一个常量，因为是3D空间，测算图片的屏幕空间和大小需要麻烦操作，这里直接人工操作 
             {
                 //_widget.transform.localPosition = new Vector3(_widget.transform.localPosition)
                 //得到屏幕最右边的坐标
-                Vector3 v = Camera.main.ScreenToWorldPoint(new Vector3(MaxScreenPos - ScreenSize.x/2f, screenPos.y, Mathf.Abs(Camera.main.transform.position.z)));
+                Vector3 v = Camera.main.ScreenToWorldPoint(new Vector3(screenRealPos, screenPos.y, Mathf.Abs(Camera.main.transform.position.z)));
 
                 Vector3 tempPosition = v;//这里必须把转换到得世界坐标变换成某个物体的局部坐标
 
                // tempPosition = new Vector3(tempPosition.x, tempPosition.y, tempPosition.z);
 
-                CacheTransform.position = tempPosition;
+                CacheTransform.position = tempPosition +new Vector3(xTemp,0f,0f);
 
                 _oriniglaPos = tempPosition;
 
-                _oriniglaPos.x += xTemp;//复位到左边之后我们要把这个距离差也带上去，否则会出现偏差
+               // _oriniglaPos.x += xTemp;//复位到左边之后我们要把这个距离差也带上去，否则会出现偏差
 
                 //  ChangeMoveSpeed();
 

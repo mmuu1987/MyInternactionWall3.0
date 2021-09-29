@@ -71,7 +71,7 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 			    UNITY_SETUP_INSTANCE_ID(i);
-				//计算阴影
+				
 
 			    //return _Color;
 				fixed4 col = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv.xy, UNITY_ACCESS_INSTANCED_PROP(Props, _Index)));
@@ -88,23 +88,6 @@
 				fixed4 col3 = lerp(col,col2,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
 
 				col3.a = lerp(1,0.5,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
-
-
-
-
-				 //float width = _LineWidth*UNITY_ACCESS_INSTANCED_PROP(Props, _Width);//得到左右两边需要白边的像素，同样也是高低需要白边的像素
-
-     //           //算出高低需要白边的比值
-     //           float LineHeight = width/UNITY_ACCESS_INSTANCED_PROP(Props, _Height);
-
-
-     //           if(i.uv.x<_LineWidth || i.uv.x>1-_LineWidth || i.uv.y<LineHeight || i.uv.y>1-LineHeight)
-     //           {
-     //               col3 = fixed4(1,1,1,1);
-
-     //           }
-
-
 				return col3;
 			}
 			ENDCG
