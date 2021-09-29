@@ -145,34 +145,34 @@ public class MyMotionTexture : MotionTextureBase
                         float floatTemp = disTemp / item.Radius;
                         if (floatTemp > 1f) floatTemp = 1f;
                         //Debug.Log(floatTemp);
-                        CacheTransform.localScale = Vector3.Lerp(CacheTransform.localScale, Vector3.one * floatTemp, Time.deltaTime * 2f);// Vector3.Lerp(CacheTransform.localScale, Vector3.one * floatTemp, Time.deltaTime * 5f);
+                        CacheTransform.localScale = Vector3.Lerp(CacheTransform.localScale, OrinigalSize * floatTemp, Time.deltaTime * 2f);// Vector3.Lerp(CacheTransform.localScale, Vector3.one * floatTemp, Time.deltaTime * 5f);
                     }
                 }
                 else if (angle == 0 || angle == 180)//暂写出这个，很小概率出现这个逻辑,可以忽略这段代码
                 {
-                    Quaternion rotation = Quaternion.Euler(0, 0, 180f);
+                    //Quaternion rotation = Quaternion.Euler(0, 0, 180f);
 
-                    Vector3 cirPosition;
+                    //Vector3 cirPosition;
 
-                    cirPosition = rotation * (_vectorMove.normalized * item.Radius) + item.CacheTransform.localPosition;
+                    //cirPosition = rotation * (_vectorMove.normalized * item.Radius) + item.CacheTransform.localPosition;
 
-                    float d2 = Vector3.Distance(pos, cirPosition);
+                    //float d2 = Vector3.Distance(pos, cirPosition);
 
-                    float angle1 = 180 - ((d2 / (2 * item.Radius)) * 180f);
+                    //float angle1 = 180 - ((d2 / (2 * item.Radius)) * 180f);
 
-                    Quaternion rotation1 = Quaternion.Euler(0, 0, angle1);
+                    //Quaternion rotation1 = Quaternion.Euler(0, 0, angle1);
 
-                    Vector3 v = _vectorMove.normalized * item.Radius;
+                    //Vector3 v = _vectorMove.normalized * item.Radius;
 
-                    pos = rotation1 * v + item.CacheTransform.localPosition;
+                    //pos = rotation1 * v + item.CacheTransform.localPosition;
 
-                    float ag = (d2 / (2 * item.Radius)) * 180f;
+                    //float ag = (d2 / (2 * item.Radius)) * 180f;
 
-                    if (ag > 60 && ag < 120)
-                        ag = 60f;
-                    ag = Mathf.Deg2Rad * ag;
+                    //if (ag > 60 && ag < 120)
+                    //    ag = 60f;
+                    //ag = Mathf.Deg2Rad * ag;
 
-                    CacheTransform.localScale = new Vector3(Mathf.Abs(Mathf.Cos(ag)), Mathf.Abs(Mathf.Cos(ag)));
+                    //CacheTransform.localScale = new Vector3(Mathf.Abs(Mathf.Cos(ag)), Mathf.Abs(Mathf.Cos(ag)));
                 }
                 #endregion
 

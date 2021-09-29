@@ -30,6 +30,11 @@ public class MotionlManager : MonoBehaviour
 
     public int Row = 30;
 
+    /// <summary>
+    /// 一横图片组成的最大宽度系数，以屏幕长度为准
+    /// </summary>
+    public float TexsWidth=1.15f;
+
     public Material Material;
 
     public GameObject PrefabGameObject;
@@ -69,7 +74,7 @@ public class MotionlManager : MonoBehaviour
     /// </summary>
     public void SetPos(float targetHeight)
     {
-        List<PictureInfo> infos = PictureInfo;
+       
 
         MaterialPropertyBlock props = new MaterialPropertyBlock();
 
@@ -96,7 +101,7 @@ public class MotionlManager : MonoBehaviour
 
             pictureInfo.Size = size;
 
-            if (pos.x > Screen.width)//如果超出屏幕，则高度加多一个targetHeight，并且重置X轴
+            if (pos.x > Screen.width* TexsWidth)//如果超出屏幕，则高度加多1个targetHeight，并且重置X轴,TexsWidth是图片所组成的长度，是屏幕长度的1.15倍
             {
 
                 rows++;
@@ -159,6 +164,71 @@ public class MotionlManager : MonoBehaviour
       
     }
 
+    public void SetPos()
+    {
+        //像素模式下，需要知道屏幕分辨率和Column  row的个数
+
+
+
+
+        Column += 1;//列数多一个，防止运动的时候有真空带
+        Row += 1;//横数多一个，防止运动的时候有真空带
+
+        float width = Screen.width * TexsWidth / Column;
+
+        float height = Screen.height * TexsWidth / Row;
+
+        int index = 0;
+
+        MaterialPropertyBlock props = new MaterialPropertyBlock();
+
+        Debug.Log("计算得出每个矩形的长是：" + width + "像素 " + "   高是 " + height + "像素");
+
+
+        for (int j = 0; j < Row; j++)
+        {
+            for (int i = 0; i < Column; i++)
+            {
+                if (index >= PictureInfo.Count) index = 0;
+
+
+                global::PictureInfo info = PictureInfo[index];
+
+                info.Size = new Vector2(SpaceWidth, SpaceHeight);
+
+                Rect rect = new Rect(width * i + width / 2, height * j + height / 2, width, height);
+
+               
+
+                MyMotionTexture cp = Instantiate(PrefabGameObject).GetComponent<MyMotionTexture>();
+
+                cp.gameObject.transform.position = Vector3.zero;
+
+                cp.gameObject.name = ((i + 1) * (j + 1)).ToString();
+
+                cp.Init(Material);
+
+                ConvertPixels.Add(cp);
+
+                cp.SetPosSize(rect, new Vector2(SpaceWidth, SpaceHeight));
+
+
+                cp.CircularList = Circulars;
+
+                cp.SetInfo(PictureInfo[index], props, i + 1, j + 1);
+
+                if (i == Column - 1)
+                {
+                    //Debug.Log(j+"   " + width * (i + 1));
+                    _maxScreenPos.Add(j, width * (i + 1));
+                }
+
+                index++;
+            }
+        }
+        SetMaxScreenPos();
+    }
+
     public void SetMaxScreenPos()
     {
         foreach (MyMotionTexture convertPixel in ConvertPixels)
@@ -168,7 +238,7 @@ public class MotionlManager : MonoBehaviour
                 if (keyValuePair.Key == convertPixel.Row)
                 {
                     convertPixel.MaxScreenPos = keyValuePair.Value;
-                    Debug.Log("MaxScreenPos is" + convertPixel.MaxScreenPos);
+                    //Debug.Log("MaxScreenPos is" + convertPixel.MaxScreenPos);
                     break;
                 }
             }
@@ -184,66 +254,7 @@ public class MotionlManager : MonoBehaviour
         List<Rect> rects = new List<Rect>();
         if (IsSelectPixe)
         {
-            //像素模式下，需要知道屏幕分辨率和Column  row的个数
-
-
-
-
-            Column += 1;//列数多一个，防止运动的时候有真空带
-            Row += 1;//横数多一个，防止运动的时候有真空带
-
-            float width = Screen.width * 1f / Column;
-
-            float height = Screen.height * 1f / Row;
-
-            int index = 0;
-
-            MaterialPropertyBlock props = new MaterialPropertyBlock();
-
-            Debug.Log("计算得出每个矩形的长是：" + width + "像素 " + "   高是 " + height + "像素");
-
-        
-            for (int j = 0; j < Row; j++)
-            {
-                for (int i = 0; i < Column; i++)
-                {
-                    if (index >= PictureInfo.Count) index = 0;
-
-                   
-                    global::PictureInfo info = PictureInfo[index];
-
-                    info.Size = new Vector2(SpaceWidth,SpaceHeight);
-
-                    Rect rect = new Rect(width * i + width / 2, height * j + height / 2, width, height);
-
-                    rects.Add(rect);
-
-                    MyMotionTexture cp = Instantiate(PrefabGameObject).GetComponent<MyMotionTexture>();
-
-                    cp.gameObject.transform.position = Vector3.zero;
-
-                    cp.gameObject.name = ((i + 1) * (j + 1)).ToString();
-
-                    cp.Init(Material);
-
-                    ConvertPixels.Add(cp);
-
-                    cp.SetPosSize(rect, new Vector2(SpaceWidth, SpaceHeight));
-
-
-                   
-
-                    cp.SetInfo(PictureInfo[index],props,i+1,j+1);
-
-                    if (i == Column - 1)
-                    {
-                        Debug.Log(j+"   " + width * (i + 1));
-                        _maxScreenPos.Add(j, width * (i+1));
-                    }
-
-                    index++;
-                }
-            }
+            SetPos();
         }
         else
         {
