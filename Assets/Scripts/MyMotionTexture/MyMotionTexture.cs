@@ -11,6 +11,8 @@ using UnityEngine.Rendering;
 /// </summary>
 public class MyMotionTexture : MotionTextureBase
 {
+
+    
     /// 图片的变化类型，运动类型,update里面每帧判断啥类型，就做出啥类型相关的动作
     /// </summary>
     private MoveType _moveType = MoveType.None;
@@ -19,10 +21,7 @@ public class MyMotionTexture : MotionTextureBase
     /// </summary>
     public float MaxScreenPos;
 
-    /// <summary>
-    /// 是否跟圆交互，判定不交互的条件为原始点跟图片原点的距离是否小于一个数值
-    /// </summary>
-    private bool _isCircleInteraction;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -104,11 +103,6 @@ public class MyMotionTexture : MotionTextureBase
         {
             _oriniglaPos.x -= 0.001f;
             position = Vector3.Lerp(CacheTransform.position, _oriniglaPos, Time.deltaTime * _leftSpeed);
-
-            //if (this.name == "500")
-            //{
-            //    Debug.Log("t is:" + Time.deltaTime * _leftSpeed+ "  CacheTransform.position is:" + CacheTransform.position+ "    _oriniglaPos is:" + _oriniglaPos + "    position is:" + position);
-            //}
         }
 
         Vector3 pos = position;
@@ -290,16 +284,9 @@ public class MyMotionTexture : MotionTextureBase
 
                 Vector3 tempPosition = v;//这里必须把转换到得世界坐标变换成某个物体的局部坐标
 
-               // tempPosition = new Vector3(tempPosition.x, tempPosition.y, tempPosition.z);
-
                 CacheTransform.position = tempPosition +new Vector3(xTemp,0f,0f);
 
                 _oriniglaPos = tempPosition;
-
-               // _oriniglaPos.x += xTemp;//复位到左边之后我们要把这个距离差也带上去，否则会出现偏差
-
-                //  ChangeMoveSpeed();
-
             }
         }
     }
