@@ -5,6 +5,7 @@ using System.ComponentModel;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Random = UnityEngine.Random;
 
 /// <summary>
 ///
@@ -21,7 +22,16 @@ public class MyMotionTexture : MotionTextureBase
     /// </summary>
     public float MaxScreenPos;
 
-    
+
+    /// <summary>
+    /// 是否可以做完自身特效后,图片自身移动
+    /// </summary>
+    public bool IsMove
+    {
+        get { return _isMove; }
+        set { _isMove = value; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,10 +46,17 @@ public class MyMotionTexture : MotionTextureBase
 
     public void LateUpdate()
     {
+       
+
         if (_moveType == MoveType.ForLeft)
         {
 
             UpdatePictureState();
+        }
+        else if (_moveType == MoveType.Label)
+        {
+
+          
         }
 
         UpdateCheckScreenPosition();
@@ -47,32 +64,17 @@ public class MyMotionTexture : MotionTextureBase
 
    
 
-    public override void SetInfo(PictureInfo info,  MaterialPropertyBlock prop,int row,int column )
-    {
-       base.SetInfo(info,prop, row, column);
-        //GetInitDis(15f, true, _originPositions[i]);
-        GetInitDis(15f,false);
-    }
-
    
-
     /// <summary>
     /// 是否开启图片移动
     /// </summary>
     private bool _isOpenPictureMove = false;
-    /// <summary>
-    /// 图片组成字的速度
-    /// </summary>
-    private float _speed = 1f;//800f/2f
+  
     /// <summary>
     /// 图片向左移动的速度
     /// </summary>
     private float _leftSpeed = 1f;
-    /// <summary>
-    /// 图片的透明度
-    /// </summary>
-    private float _aplha = 1f;
-
+   
 
     /// <summary>
     /// 图片运动的方向,这个向量的主要作用就是方向
@@ -190,12 +192,22 @@ public class MyMotionTexture : MotionTextureBase
         }
     }
 
+   
+
+
+    /// <summary>
+    /// 每帧不断更新图片的透明度
+    /// </summary>
+    private void UpdateAplha()
+    {
+      //  _widget.color = new Color(_widget.color.r, _widget.color.g, _widget.color.b, Mathf.Lerp(_widget.color.a, _aplha, Time.deltaTime * 10f));
+    }
+
     /// <summary>
     /// 初始化图片的位置，当初始化完成后，这些数据攻update每帧调用
     /// </summary>
     /// <param name="f">距离系数</param>
     /// <param name="isLeftRigt">是否左右运动</param>
-    /// <param name="originPosition">原始位置</param>
     public void GetInitDis(float f, bool isLeftRigt)
     {
         if (isLeftRigt)
@@ -216,7 +228,7 @@ public class MyMotionTexture : MotionTextureBase
 
        // _leftSpeed = 0.1f;//运动的速度
 
-        _aplha = 1f;//图片的透明度
+       
 
         _moveType = MoveType.ForLeft;//图片的运动方式为向左运动
 
@@ -291,18 +303,7 @@ public class MyMotionTexture : MotionTextureBase
         }
     }
 
-#if UNITY_EDITOR
-    //private void OnGUI()
-    //{
-    //    if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test"))
-    //    {
-    //       // Debug.Log(GetScreenSize().ToString());
+   
 
-    //       SetScreenPos(new Vector2(1920f,0f));
 
-    //       SetScreenSize(new Vector2(100, 1080));
-    //    }
-    //}
-
-#endif
 }

@@ -2,7 +2,7 @@
 {
    Properties
 	{
-		  _LineWidth("LineWidth",range(0,0.5))=0.1
+		  _Convert("Convert",range(0,1))=0
 		 _MainTex ("Texture", 2D) = "white" {}
 		
 	}
@@ -33,13 +33,14 @@
 
 			UNITY_DECLARE_TEX2DARRAY(_TexArr);
 			float4 _Color;
-			float _LineWidth;
+			float _Convert;
 			sampler2D _MainTex;
 
 			struct appdata
 			{
 				float4 vertex : POSITION;
 				float3 uv : TEXCOORD0;
+				
 				 UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -47,7 +48,7 @@
 			{
 				float4 pos : SV_POSITION;
 				float3 uv : TEXCOORD0;
-				
+				float4 uv_project:TEXCOORD1;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 			UNITY_INSTANCING_BUFFER_START(Props)
@@ -64,7 +65,7 @@
 				
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.uv = v.uv;
-
+				o.uv_project = ComputeScreenPos(o.pos);
 				return o;
 			}
 
@@ -75,20 +76,23 @@
 
 			    //return _Color;
 				fixed4 col = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv.xy, UNITY_ACCESS_INSTANCED_PROP(Props, _Index)));
-				//fixed4 col =  tex2D(_MainTex, i.uv);
+				float2 uv = i.uv_project.xy/i.uv_project.w;
+				fixed4  col2 =  tex2D(_MainTex, uv);
 
-				float grey = dot(col.rgb, fixed3(0.22, 0.707, 0.071));
 
-				fixed4 col2;
-				col2.rgb = grey;
-				col2.a = 0.5;
+
+				//float grey = dot(col.rgb, fixed3(0.22, 0.707, 0.071));
+
+				//fixed4 col2;
+				//col2.rgb = grey;
+				//col2.a = 0.5;
 
 				
 				
-				fixed4 col3 = lerp(col,col2,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
+				//fixed4 col3 = lerp(col,col2,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
 
-				col3.a = lerp(1,0.5,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
-				return col3;
+				//col3.a = lerp(1,0.5,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
+				return lerp(col,col2,_Convert);
 			}
 			ENDCG
 		}

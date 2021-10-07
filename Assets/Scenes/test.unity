@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 1908635118}
   - component: {fileID: 1908635117}
   - component: {fileID: 1908635120}
+  - component: {fileID: 1908635121}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -495,3 +496,23 @@ MonoBehaviour:
   Circulars:
   - {fileID: 1372314213}
   IsSelectPixe: 1
+  PixelChangePosition: {fileID: 1908635121}
+--- !u!114 &1908635121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1908635116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7884d6337923b9b4bbcaf8922530e40a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Texture: {fileID: 2800000, guid: ac5760467303fac408343450d977a7b5, type: 3}
+  range: 2.7
+  _camera: {fileID: 0}
+  RealScreenWidth: 2560
+  RealScreenHeight: 1600
+  Z: 0
+  Parent: {fileID: 0}

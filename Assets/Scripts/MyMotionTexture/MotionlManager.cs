@@ -4,14 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Rendering;
-
+using Random = UnityEngine.Random;
 
 public class MotionlManager : MonoBehaviour
 {
-
-
-
-
     /// <summary>
     /// 图片的高
     /// </summary>
@@ -392,23 +388,40 @@ public class MotionlManager : MonoBehaviour
         Resources.UnloadUnusedAssets();
     }
 
+
+    public PixelChangePosition PixelChangePosition;
+    
+
+    /// <summary>
+    /// 打开2D图片由左进入屏幕的运动
+    /// </summary>
+    public void OpenPictureMove()
+    {
+        for (int i = 0; i < ConvertPixels.Count; i++)
+        {
+            ConvertPixels[i].GetInitDis(15f, false);
+        }
+
+
+
+    }
+
     // Update is called once per frame
     void Update()
     {
 
     }
 
-   
-#if UNITY_EDITOR
-    //private void OnGUI()
-    //{
-    //    if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test"))
-    //    {
-    //        Debug.Log(MyLerp(1f,2f, S));
 
-    //        Debug.Log(Mathf.Lerp(1f,2f, S));
-    //    }
-    //}
+#if UNITY_EDITOR
+    private void OnGUI()
+    {
+        if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test1"))
+        {
+            OpenPictureMove();
+        }
+       
+    }
 #endif
 }
 public enum MoveType
