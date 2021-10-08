@@ -9,26 +9,28 @@
 
 	SubShader
 	{
-		Tags { "Queue"="Transparent"  "LightMode" = "ForwardBase" "RenderType"="Transparent" }
+		Tags {   "LightMode" = "ForwardBase" "RenderType"="Opaque" }
 		LOD 100
 
 		Pass
 		{
 
 		    // 关闭深度写入
-            ZWrite Off
+            //ZWrite Off
             // 开启混合模式，并设置混合因子为SrcAlpha和OneMinusSrcAlpha
-            Blend SrcAlpha OneMinusSrcAlpha
+           // Blend SrcAlpha OneMinusSrcAlpha
 
 			CGPROGRAM
-			#include "UnityCG.cginc"
+			  
 			#pragma vertex vert
 			#pragma fragment frag
 			#include "UnityCG.cginc"
 			#pragma multi_compile_instancing
 			#pragma multi_compile_fwdbase  nolightmap nodirlightmap nodynlightmap novertexlight
-			//#pragma multi_compile
 			
+			//#pragma multi_compile
+		    #include "AutoLight.cginc"
+            #include "Lighting.cginc"
           
 
 			UNITY_DECLARE_TEX2DARRAY(_TexArr);
@@ -48,7 +50,8 @@
 			{
 				float4 pos : SV_POSITION;
 				float3 uv : TEXCOORD0;
-				float4 uv_project:TEXCOORD1;
+				float4 uv_project:TEXCOORD2;
+				SHADOW_COORDS(1) //只产生阴影
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 			UNITY_INSTANCING_BUFFER_START(Props)
@@ -66,6 +69,7 @@
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.uv = v.uv;
 				o.uv_project = ComputeScreenPos(o.pos);
+				TRANSFER_SHADOW(o);
 				return o;
 			}
 
@@ -78,7 +82,7 @@
 				fixed4 col = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv.xy, UNITY_ACCESS_INSTANCED_PROP(Props, _Index)));
 				float2 uv = i.uv_project.xy/i.uv_project.w;
 				fixed4  col2 =  tex2D(_MainTex, uv);
-
+				fixed shadow =SHADOW_ATTENUATION(i); 
 
 
 				//float grey = dot(col.rgb, fixed3(0.22, 0.707, 0.071));
@@ -87,12 +91,14 @@
 				//col2.rgb = grey;
 				//col2.a = 0.5;
 
-				
+				fixed4 col3 = lerp(col,col2,_Convert);
+
+
 				
 				//fixed4 col3 = lerp(col,col2,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
 
 				//col3.a = lerp(1,0.5,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
-				return lerp(col,col2,_Convert);
+				return col3*1;
 			}
 			ENDCG
 		}
