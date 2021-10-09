@@ -4,12 +4,16 @@
 	{
 		  _Convert("Convert",range(0,1))=0
 		 _MainTex ("Texture", 2D) = "white" {}
+		 _Color("Color Tint",Color) = (1,1,1,1)//控制整体颜色
+		_Specular("Specular",Color) =(1,1,1,1)//控制高光反射颜色
+		_Gloss("Gloss",Range(1,100))=10//控制高光区域大小
+		_AlphaScale("Alpha Scale",Range(0,1)) = 0.65//透明度混合中的透明度系数
 		
 	}
 
 	SubShader
 	{
-		Tags { "RenderType"="Transparent"  "LightMode" = "ForwardBase" "Queue"="Transparent" }
+		Tags{"LightMode" = "ForwardBase" "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" "DisableBatching" = "True" }
 		LOD 100
 
 		Pass
@@ -86,28 +90,32 @@
 			{
 			    UNITY_SETUP_INSTANCE_ID(i);
 				
+				fixed3 worldNormal = normalize(i.worldNormal);//世界空间下顶点法线
+			    fixed3 worldLight = UnityWorldSpaceLightDir(i.worldPos);//世界空间下顶点处的入射光
+			    fixed4 texColor = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv.xy, UNITY_ACCESS_INSTANCED_PROP(Props, _Index)));
+				//fixed4 texColor = tex2D(_MainTex, i.uv);
+			    fixed3 albedo = texColor.rgb*_Color.rgb;//纹理采样获取漫反射颜色
+			    fixed3 diffuse = _LightColor0.rgb * albedo * (dot(worldLight, worldNormal)*0.5 + 0.5);//半兰伯特模型计算漫反射
+				fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;//环境光
 
-			    //return _Color;
-				fixed4 col = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv.xy, UNITY_ACCESS_INSTANCED_PROP(Props, _Index)));
+				//计算高光反射，Blinn-Phong模型
+			    fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));//观察方向
+			    fixed3 halfDir = normalize(worldLight + viewDir);
+			    fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(halfDir, worldNormal)), _Gloss);
+
+
+				UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);//获取光照衰减和阴影
+
 				float2 uv = i.uv_project.xy/i.uv_project.w;
 				fixed4  col2 =  tex2D(_MainTex, uv);
 				fixed shadow =SHADOW_ATTENUATION(i); 
 
 
-				//float grey = dot(col.rgb, fixed3(0.22, 0.707, 0.071));
-
-				//fixed4 col2;
-				//col2.rgb = grey;
-				//col2.a = 0.5;
-
-				fixed4 col3 = lerp(col,col2,_Convert);
+				fixed4 colEnd = fixed4(ambient + (diffuse + specular) * atten,texColor.a*_AlphaScale);
 
 
-				
-				//fixed4 col3 = lerp(col,col2,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
-
-				//col3.a = lerp(1,0.5,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
-				return col*shadow; 
+				fixed4 col3 = lerp(colEnd,col2,_Convert);
+				return col3; 
 			}
 			ENDCG
 		}

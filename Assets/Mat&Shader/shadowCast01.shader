@@ -82,6 +82,8 @@ Shader "Custom/shadowCast01"
 			
 			UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);//获取光照衰减和阴影
 			//fixed shadow = SHADOW_ATTENUATION(i);//获取阴影值
+
+			
  
 			return fixed4(ambient + (diffuse + specular) * atten,texColor.a*_AlphaScale);//改变透明通道的值
 		}
