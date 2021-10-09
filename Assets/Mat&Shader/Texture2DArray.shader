@@ -9,16 +9,16 @@
 
 	SubShader
 	{
-		Tags {   "LightMode" = "ForwardBase" "RenderType"="Opaque" }
+		Tags { "RenderType"="Transparent"  "LightMode" = "ForwardBase" "Queue"="Transparent" }
 		LOD 100
 
 		Pass
 		{
 
 		    // 关闭深度写入
-            //ZWrite Off
+           ZWrite Off
             // 开启混合模式，并设置混合因子为SrcAlpha和OneMinusSrcAlpha
-           // Blend SrcAlpha OneMinusSrcAlpha
+           Blend SrcAlpha OneMinusSrcAlpha
 
 			CGPROGRAM
 			  
@@ -26,7 +26,7 @@
 			#pragma fragment frag
 			#include "UnityCG.cginc"
 			#pragma multi_compile_instancing
-			#pragma multi_compile_fwdbase  nolightmap nodirlightmap nodynlightmap novertexlight
+			#pragma multi_compile_fwdbase  
 			
 			//#pragma multi_compile
 		    #include "AutoLight.cginc"
@@ -36,13 +36,17 @@
 			UNITY_DECLARE_TEX2DARRAY(_TexArr);
 			float4 _Color;
 			float _Convert;
+			
+		    fixed4 _Specular;
+		    float _Gloss;
+	     	float _AlphaScale;
 			sampler2D _MainTex;
 
 			struct appdata
 			{
 				float4 vertex : POSITION;
 				float3 uv : TEXCOORD0;
-				
+				float3 normal:NORMAL;
 				 UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
@@ -52,6 +56,9 @@
 				float3 uv : TEXCOORD0;
 				float4 uv_project:TEXCOORD2;
 				SHADOW_COORDS(1) //只产生阴影
+				float3 worldNormal:TEXCOORD3;//使用第二个插值寄存器
+			   float3 worldPos:TEXCOORD4;
+
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 			UNITY_INSTANCING_BUFFER_START(Props)
@@ -69,6 +76,8 @@
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.uv = v.uv;
 				o.uv_project = ComputeScreenPos(o.pos);
+				o.worldNormal = UnityObjectToWorldNormal(v.normal);//世界空间下顶点法线
+			    o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 				TRANSFER_SHADOW(o);
 				return o;
 			}
@@ -98,12 +107,12 @@
 				//fixed4 col3 = lerp(col,col2,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
 
 				//col3.a = lerp(1,0.5,UNITY_ACCESS_INSTANCED_PROP(Props, _Flag));
-				return col3*1;
+				return col*shadow; 
 			}
 			ENDCG
 		}
 	}
 
-	Fallback "Diffuse"
+	Fallback "VertexLit"
 
 }
