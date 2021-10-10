@@ -13,16 +13,16 @@
 
 	SubShader
 	{
-		Tags{"LightMode" = "ForwardBase" "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" "DisableBatching" = "True" }
+		Tags{"LightMode" = "ForwardBase"  "IgnoreProjector" = "True" "RenderType" = "Opaque"  }
 		LOD 100
 
 		Pass
 		{
 
 		    // 关闭深度写入
-           ZWrite Off
+           //ZWrite Off
             // 开启混合模式，并设置混合因子为SrcAlpha和OneMinusSrcAlpha
-           Blend SrcAlpha OneMinusSrcAlpha
+           //Blend SrcAlpha OneMinusSrcAlpha
 
 			CGPROGRAM
 			  

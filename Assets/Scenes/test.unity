@@ -20,13 +20,13 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -390,7 +390,7 @@ MonoBehaviour:
   Row: 32
   TexsWidth: 1.15
   Material: {fileID: 2100000, guid: 8ff5cff2649cbff41ad009817a803f5f, type: 2}
-  PrefabGameObject: {fileID: 21190233976634571, guid: d174a9789f418a54c91edc66d89386a9,
+  PrefabGameObject: {fileID: 2079388243158591636, guid: 3ba09ace990115442a734048e556eb99,
     type: 3}
   texs:
   - {fileID: 2800000, guid: 1f054a84efc92a6428010529c439e21b, type: 3}
@@ -495,7 +495,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: 1a0d4996ca8a358408104a86c818e739, type: 3}
   Circulars:
   - {fileID: 1372314213}
-  IsSelectPixe: 1
+  IsSelectPixe: 0
   PixelChangePosition: {fileID: 1908635121}
 --- !u!114 &1908635121
 MonoBehaviour:
