@@ -303,7 +303,14 @@ public class MyMotionTexture : MotionTextureBase
         }
     }
 
-   
 
+    public void MoveToBack()
+    {
+        StartCoroutine(GlobalSetting.WaitTime(Random.Range(0.1f, 2f), (() =>
+        {
+            this.CacheTransform.DOMoveZ(_oriniglaPos.z + 1, 0.35f);
+        })));
+
+    }
 
 }

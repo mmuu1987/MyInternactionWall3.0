@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// 负责表现初始化数据
@@ -13,6 +14,7 @@ public class MotionTextureBase : TextureBase
 
     private Material _curMaterial;
 
+    
 
     private bool _isInitEnd = false;
 
@@ -30,6 +32,8 @@ public class MotionTextureBase : TextureBase
     /// 初始化的时候的原本的位置
     /// </summary>
     protected Vector3 _oriniglaPos;
+
+    public ObjectType ObjectType { get; private set; }
 
     protected PictureInfo PictureInfo;
 
@@ -112,7 +116,13 @@ public class MotionTextureBase : TextureBase
 
         PictureInfo = info;
 
-      //  this.name = (Row * column).ToString();
+       
+
+        int temp = Random.Range(1, Enum.GetNames(typeof(ObjectType)).Length);
+
+        ObjectType = (ObjectType)temp;
+        Debug.Log(ObjectType);
+        //  this.name = (Row * column).ToString();
     }
 
     

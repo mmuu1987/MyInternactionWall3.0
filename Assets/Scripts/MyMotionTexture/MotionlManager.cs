@@ -406,6 +406,17 @@ public class MotionlManager : MonoBehaviour
 
     }
 
+    public void OpenClassify(ObjectType objectType)
+    {
+        foreach (MyMotionTexture mmt in ConvertPixels)
+        {
+            if (mmt.ObjectType == objectType)
+            {
+                mmt.MoveToBack();
+            }
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -418,7 +429,8 @@ public class MotionlManager : MonoBehaviour
     {
         if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test1"))
         {
-            OpenPictureMove();
+            //OpenPictureMove();
+            OpenClassify(ObjectType.ONE);
         }
        
     }
@@ -443,4 +455,15 @@ public enum MoveType
     /// 图片分开左右两边，分别流向屏幕外边
     /// </summary>
     ScreenOut//
+}
+
+
+/// <summary>
+/// 信息的分类
+/// </summary>
+public enum ObjectType:int
+{
+    None=0,
+    ONE,
+    TWO
 }

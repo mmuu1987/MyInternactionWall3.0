@@ -113,9 +113,19 @@
 
 				fixed4 colEnd = fixed4(ambient + (diffuse + specular) * atten,texColor.a*_AlphaScale);
 
-
 				fixed4 col3 = lerp(colEnd,col2,_Convert);
-				return col3; 
+
+
+				
+				fixed4 tempNormal = lerp(col3*fixed4(0.3,0.3,0.3,1),col3,abs(worldNormal.z));
+
+				return tempNormal;
+				
+			
+
+				
+			
+				
 			}
 			ENDCG
 		}
