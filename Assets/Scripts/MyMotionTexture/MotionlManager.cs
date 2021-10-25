@@ -412,7 +412,8 @@ public class MotionlManager : MonoBehaviour
         {
             if (mmt.ObjectType == objectType)
             {
-                mmt.MoveToBack();
+
+             StartCoroutine(   mmt.MoveToBack());
             }
         }
     }

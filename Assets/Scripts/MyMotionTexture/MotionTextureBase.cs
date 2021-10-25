@@ -89,6 +89,8 @@ public class MotionTextureBase : TextureBase
 
     }
 
+
+
     public virtual void SetInfo(PictureInfo info, MaterialPropertyBlock prop, int row, int column)
     {
         Column = column;
@@ -108,9 +110,6 @@ public class MotionTextureBase : TextureBase
 
         //Debug.Log(n);
         MaterialPropertyBlock.SetInt("_Index", PictureId);
-        MaterialPropertyBlock.SetFloat("_Flag", 0);
-        MaterialPropertyBlock.SetFloat("_Width", OrinigalSize.x);
-        MaterialPropertyBlock.SetFloat("_Height", OrinigalSize.y);
 
         MeshRenderer.SetPropertyBlock(MaterialPropertyBlock);
 
@@ -121,7 +120,7 @@ public class MotionTextureBase : TextureBase
         int temp = Random.Range(1, Enum.GetNames(typeof(ObjectType)).Length);
 
         ObjectType = (ObjectType)temp;
-        Debug.Log(ObjectType);
+        //Debug.Log(ObjectType);
         //  this.name = (Row * column).ToString();
     }
 

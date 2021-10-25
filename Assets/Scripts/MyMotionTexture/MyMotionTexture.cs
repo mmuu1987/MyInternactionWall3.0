@@ -23,6 +23,12 @@ public class MyMotionTexture : MotionTextureBase
     public float MaxScreenPos;
 
 
+    public float _GreyRatio=0;
+    private Tween _greyRatioTween;
+
+    public float _Brightness=1;
+    private Tween _brighnessTween;
+
     /// <summary>
     /// 是否可以做完自身特效后,图片自身移动
     /// </summary>
@@ -42,6 +48,11 @@ public class MyMotionTexture : MotionTextureBase
     void Update()
     {
         _vectorMove = Vector3.left;//暂定向左，其实向右也是可以的
+
+        MaterialPropertyBlock.SetInt("_Index", PictureId);
+        MaterialPropertyBlock.SetFloat("_GreyRatio", _GreyRatio);//设置灰度系数
+        MaterialPropertyBlock.SetFloat("_Brightness", _Brightness);//设置亮度系数
+        MeshRenderer.SetPropertyBlock(MaterialPropertyBlock);
     }
 
     public void LateUpdate()
@@ -304,12 +315,33 @@ public class MyMotionTexture : MotionTextureBase
     }
 
 
-    public void MoveToBack()
+    public IEnumerator MoveToBack()
     {
-        StartCoroutine(GlobalSetting.WaitTime(Random.Range(0.1f, 2f), (() =>
+        while (true)
         {
-            this.CacheTransform.DOMoveZ(_oriniglaPos.z + 1, 0.35f);
-        })));
+            yield return new WaitForSeconds(Random.Range(2f, 5f));
+
+            float rand = Random.Range(0f, 1f);
+
+            if (rand >= 0.5f)
+            {
+                this.CacheTransform.DOMoveZ(_oriniglaPos.z + 1, 0.25f);
+
+                DOTween.To(() => _GreyRatio, x => _GreyRatio = x, 1, 0.25f);
+
+                DOTween.To(() => _Brightness, x => _Brightness = x, 0.75f, 0.25f);
+            }
+            else
+            {
+                this.CacheTransform.DOMoveZ(_oriniglaPos.z , 0.25f);
+
+                DOTween.To(() => _GreyRatio, x => _GreyRatio = x, 0f, 0.25f);
+
+                DOTween.To(() => _Brightness, x => _Brightness = x, 1f, 0.25f);
+            }
+           
+        }
+     
 
     }
 

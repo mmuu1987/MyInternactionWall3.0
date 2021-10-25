@@ -8,7 +8,10 @@
 		_Specular("Specular",Color) =(1,1,1,1)//控制高光反射颜色
 		_Gloss("Gloss",Range(1,100))=10//控制高光区域大小
 		_AlphaScale("Alpha Scale",Range(0,1)) = 0.65//透明度混合中的透明度系数
-		
+
+		_Side("Side",Color)=(0,0,0,1)//控制侧面的颜色
+		_Brightness("brightness",Range(0,1))=1  //灰度颜色的亮度系数
+		_GreyRatio("GreyRatio",Range(0,1))=0//灰度系数
 	}
 
 	SubShader
@@ -45,6 +48,9 @@
 		    float _Gloss;
 	     	float _AlphaScale;
 			sampler2D _MainTex;
+			float4 _Side;
+			//float _Brightness;
+			//float _GreyRatio;
 
 			struct appdata
 			{
@@ -61,15 +67,14 @@
 				float4 uv_project:TEXCOORD2;
 				SHADOW_COORDS(1) //只产生阴影
 				float3 worldNormal:TEXCOORD3;//使用第二个插值寄存器
-			   float3 worldPos:TEXCOORD4;
+			    float3 worldPos:TEXCOORD4;
 
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 			UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(int, _Index)
-				UNITY_DEFINE_INSTANCED_PROP(float, _Flag)
-				 UNITY_DEFINE_INSTANCED_PROP(int, _Width)
-				UNITY_DEFINE_INSTANCED_PROP(float, _Height)
+				UNITY_DEFINE_INSTANCED_PROP(float, _GreyRatio)
+				UNITY_DEFINE_INSTANCED_PROP(float, _Brightness)
             UNITY_INSTANCING_BUFFER_END(Props)
 			v2f vert (appdata v)
 			{
@@ -117,14 +122,15 @@
 
 
 				
-				fixed4 tempNormal = lerp(col3*fixed4(0.3,0.3,0.3,1),col3,abs(worldNormal.z));
+				fixed4 col4 = lerp(col3*_Side,col3,abs(worldNormal.z));//根据法线方向做插值
 
-				return tempNormal;
-				
-			
+			   //把彩色去掉效果
+			   float grey = dot(col4.rgb, fixed3(0.22, 0.707, 0.071));
+			   fixed4 col5= float4(grey,grey,grey,1)*UNITY_ACCESS_INSTANCED_PROP(Props, _Brightness); 
 
-				
-			
+			   fixed4 col6 = lerp(col4,col5,UNITY_ACCESS_INSTANCED_PROP(Props, _GreyRatio));
+
+			   return col6;
 				
 			}
 			ENDCG
