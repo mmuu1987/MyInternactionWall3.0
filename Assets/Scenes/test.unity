@@ -383,14 +383,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6f8ea6f3302fd847948cdbb5fb026dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PictureHeight: 256
+  PictureHeight: 64
   SpaceWidth: 5
   SpaceHeight: 5
   Column: 76
   Row: 32
   TexsWidth: 1.15
   Material: {fileID: 2100000, guid: 8ff5cff2649cbff41ad009817a803f5f, type: 2}
-  PrefabGameObject: {fileID: 2079388243158591636, guid: 3ba09ace990115442a734048e556eb99,
+  PrefabGameObject: {fileID: 2079388243158591636, guid: 3238c062f37c4e34b87b39939ca14fac,
     type: 3}
   texs:
   - {fileID: 2800000, guid: 1f054a84efc92a6428010529c439e21b, type: 3}
