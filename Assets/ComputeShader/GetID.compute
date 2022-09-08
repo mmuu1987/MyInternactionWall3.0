@@ -1,0 +1,78 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma kernel DrawTex 
+// Create a RenderTexture with enableRandomWrite flag and set it
+
+struct Info
+{
+    int ID;
+     
+    float Depth;
+    
+    float3 Vector3Pos;
+};
+
+
+// with cs.SetTexture
+RWTexture2D<float4> RenderTexture;
+
+float4 Col;
+
+float2 randPos;
+
+RWStructuredBuffer<Info> ComputeBuffer;
+
+
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+   
+    if(id.x==randPos.x && id.y==randPos.y)
+    {
+        float4 col = RenderTexture[id.xy];
+    
+        Info info = ComputeBuffer[0];
+    
+        int oldId = info.ID;
+    
+        int outId = (int) (col.x * 1000) ;
+        
+        float posx = frac(col.x * 1000);
+        
+        
+        posx = posx * 1000;
+        
+        float posy = col.y * 1000;
+        
+        float posz = col.z * 1000;
+        
+        if (posy == 0 && posz == 0)
+            outId = -1;
+    
+        float depth = col.z * 1000; 
+    
+        info.ID = (int) outId;
+        info.Depth = depth;
+        info.Vector3Pos.x = posx;
+        info.Vector3Pos.y = posy;
+        info.Vector3Pos.z = posz;
+        
+        ComputeBuffer[0] = info; 
+        
+    
+    }
+    
+   
+   
+    
+}
+
+
+[numthreads(8, 8, 1)]
+void DrawTex(uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+
+    RenderTexture[id.xy] = Col;
+}

@@ -1,38 +1,98 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEditor;
+using UnityEngine.VFX;
+using Object = UnityEngine.Object;
 
 public class Tex2DArrayTest : MonoBehaviour
 {
 
+    public List<Texture2D> Texs = new List<Texture2D>();
 
-    public List<MeshRenderer> MeshRenderers = new List<MeshRenderer>();
+    [MenuItem("GameObject/Create Texture2DArry")]
+    static void CreateTexture2DArry()
+    {
+        // Create a simple material asset  
 
-    
+        string[] files = Directory.GetFiles(Application.dataPath + "/Pictures");
 
-    public PictureManager ScaleImage;
 
-    void Start()
+        List<Texture2D> texTemps = new List<Texture2D>();
+        List<Vector2>  sizes = new List<Vector2>();
+
+        foreach (string file in files)
+        {
+            if (file.Contains(".meta")) continue;
+
+
+            string filePath = file.Replace(Application.dataPath, "");
+
+            filePath = filePath.Replace("\\", "/");
+            Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/" + filePath);
+            sizes.Add(new Vector2(tex.width,tex.height));
+            tex = GlobalSetting.Resize(tex, 512, 512);
+
+            if (tex != null)
+            {
+                Debug.Log(tex.name);
+                texTemps.Add(tex);
+            }
+        }
+
+
+        Debug.Log(texTemps.Count);
+
+        Texture2DArray TexAry = SetTexToGpu(texTemps.ToArray());
+
+
+        CraetSizeTex(sizes);
+
+
+        AssetDatabase.CreateAsset(TexAry, "Assets/Mytex2darry.asset");
+
+       
+
+      
+    }
+
+    [MenuItem("GameObject/Load Texture2DArry")]
+    public static void LoadTexture2dArry()
     {
 
+        Texture2DArray tex = AssetDatabase.LoadAssetAtPath<Texture2DArray>("Assets/Mytex2darry.asset");
+
+        
+
+        Debug.Log(tex.depth);
+
+    }
+
+
+    public VisualEffect VfX;
+    void Start()
+    { 
 
         //AssetDatabase.CreateAsset(texArr, "Assets/RogueX/Prefab/texArray.asset");
     }
 
-    public void SetTexToGpu(Texture2D[] texs)
+    public static Texture2DArray SetTexToGpu(Texture2D[] texs)
     {
         if (texs == null || texs.Length == 0)
         {
-            enabled = false;
-            return;
+
+            return null;
         }
 
         if (SystemInfo.copyTextureSupport == CopyTextureSupport.None ||
             !SystemInfo.supports2DArrayTextures)
         {
-            enabled = false;
-            return;
+
+            return null;
         }
 
         Texture2DArray texArr = new Texture2DArray(texs[0].width, texs[0].width, texs.Length, texs[0].format, false, false);
@@ -62,8 +122,29 @@ public class Tex2DArrayTest : MonoBehaviour
         texArr.filterMode = FilterMode.Bilinear;
 
 
+        return texArr;
 
-     
+    }
+
+    public static void CraetSizeTex(List<Vector2> texs)
+    {
+        Texture2D tex = new Texture2D(texs.Count, 1,TextureFormat.RGBA32,false);
+
+        for (int i = 0; i < texs.Count; i++)
+        {
+
+            Vector2 size = GlobalSetting.ScaleImageSize(new Vector2(texs[i].x, texs[i].y), new Vector2(512f, 512f));
+
+            size = size / 512f;
+
+            tex.SetPixel(i,1,new Color(size.x,size.y,0));
+
+
+        }
+
+        AssetDatabase.CreateAsset(tex, "Assets/SizeTex.asset");
+
+
     }
 
     void OnGUI()
@@ -71,18 +152,7 @@ public class Tex2DArrayTest : MonoBehaviour
         if (GUI.Button(new Rect(100, 0, 200, 100), "Change Texture"))
         {
 
-            MaterialPropertyBlock props = new MaterialPropertyBlock();
-            int n = 0;
-            foreach (MeshRenderer meshRenderer in MeshRenderers)
-            {
-                n++;
-                meshRenderer.material = ScaleImage.Mat;
-                props.SetInt("_Index",n);
 
-                if (n >= 100) n = 0;
-
-                meshRenderer.SetPropertyBlock(props);
-            }
         }
     }
 
