@@ -30,6 +30,9 @@ EditorUserSettings:
       value: 260b1b202c792c643a343f6d252d56040f360b39293c6906243a0832eec5323ee7e422cef53b2f347431ee311432042cbf070818e20e18442707ee1b10f3351517c01bd13dda1e0cc3542fcfc00ddde6c69bd9ebcbffe2ca91feb3e1f1e4fdb7c6f0a8eba6adef8f8b9dccb0abc3d58be0f885c5c8c7db89afdcd8c7a7
       flags: 0
     RecentlyUsedScenePath-8:
+      value: 22424703114646680e0b0227036c7c0213160c192f3a233523001032e5e57a2decee22f0
+      flags: 0
+    RecentlyUsedScenePath-9:
       value: 22424703114646680e0b0227036c6b150e030d3829093422341a153cf5ae2136ebf32f
       flags: 0
     UnityEditor.ShaderGraph.Blackboard:
@@ -40,6 +43,9 @@ EditorUserSettings:
       flags: 0
     UnityEditor.ShaderGraph.InspectorWindow:
       value: 18135939215a0a5004000b0e15254b524c1119263f2d6a722016393ce1eb3d36e5d339f9a5602b2e2c07a37e0901373ae01e0008f707250d171df81a53a5485d41895ac825e0100ec20313c0d91cddccd3d0c7efcca9bd81908fecb0f9cfddf1eff4e7a1b1eae482f0fcaee1e1928b86d888ed969b938797a7cf
+      flags: 0
+    UnityEditor.ShaderGraph.ToggleSettings:
+      value: 18135d1527590858060c032302276919051e1a26296a7c243f3c187fa0e92708f0e220e0e22d09352a0bed30017c5b2be01f0c47b40219221f1ded0b12eb1f0127cc0bcc18c41a5e910d0edbc85193e0dadadbf8e8f9e8ced7dba5e0b6aaaca4dbfeabfef4eae1
       flags: 0
     vcSharedLogLevel:
       value: 0d5e400f0650

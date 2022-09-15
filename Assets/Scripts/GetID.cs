@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.VFX;
 using UnityEngine.Video;
 using Random = System.Random;
 
@@ -35,6 +36,12 @@ public class GetID : MonoBehaviour
     public List<Texture2D> PictureList = new List<Texture2D>();
 
     public GameObject TargetGameObject;
+
+    public VisualEffect Vfx;
+
+    public Vector4 Rect;
+
+    public VisualEffect CreatImgageLeft;
 
     private List<Info> infos = new List<Info>();
 
@@ -134,7 +141,7 @@ public class GetID : MonoBehaviour
 
         //TargetGameObject.transform.position = worldPos;
 
-         MainCamera.transform.DOMove(worldPos + new Vector3(0f, 0f, -2f), 1f);
+        // MainCamera.transform.DOMove(worldPos + new Vector3(0f, 0f, -2f), 1f);
 
 
     }
@@ -142,11 +149,77 @@ public class GetID : MonoBehaviour
     private Vector3 _preMousePos;
     private Vector3 _delta;
     private float _clikcTimeTemp = 0.0f;
+
+    private bool _isButtonUp = false;
     public float MoveSpeed = 1f;
     /// <summary>
     /// 移动主相机
     /// </summary>
-    public void MoveMainCam()
+    public void HandleInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _preMousePos = Input.mousePosition;
+            _clikcTimeTemp = 0f;
+            _isButtonUp = false;
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            _delta = _preMousePos - Input.mousePosition;
+            _preMousePos = Input.mousePosition;
+
+            _clikcTimeTemp += Time.deltaTime;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            _isButtonUp = true;
+            if (_clikcTimeTemp <= 0.2f)//触发点击事件
+            {
+                Debug.Log("点击的位置是： " + Input.mousePosition);
+                float clickWidth = _preMousePos.x;
+                float clickHeight = _preMousePos.y;
+
+                DisPatch(new Vector2(clickWidth, clickHeight));
+            }
+        }
+
+
+      
+    }
+
+    public void MoveCam()
+    {
+
+        Vector3 minPos = MainCamera.transform.position;
+
+        Vector3 pos;
+        if (_isButtonUp)
+          pos = MoveSpeed * _delta * 0.1f;
+        else
+            pos = MoveSpeed * _delta;
+
+        MainCamera.transform.position = pos + minPos;
+
+        ColCamera.transform.position = MainCamera.transform.position + new Vector3(0f, 500f, 0f);
+
+    }
+
+    /// <summary>
+    /// 检测相机的范围是否越界
+    /// </summary>
+    public void CheckCamRange()
+    {
+        Vector3 pos = MainCamera.transform.position;
+
+        if (pos.x <= Rect.x || pos.x > Rect.y || pos.y <= Rect.z || pos.y > Rect.w)
+        {
+
+            _delta = -1 * _delta;
+        }
+    }
+    public void MovePicture()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -157,15 +230,15 @@ public class GetID : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
 
-            Vector3 minPos = MainCamera.transform.position;
+           
 
             _delta = _preMousePos - Input.mousePosition;
             _preMousePos = Input.mousePosition;
 
             Vector3 pos = MoveSpeed * _delta;
 
-            MainCamera.transform.position = pos + minPos;
-            
+            Vfx.SetVector3("MoveDelta",pos);
+
 
             _clikcTimeTemp += Time.deltaTime;
         }
@@ -183,11 +256,10 @@ public class GetID : MonoBehaviour
         }
 
 
-        ColCamera.transform.position = MainCamera.transform.position + new Vector3(0f, 500f, 0f);
+      
     }
-
     /// <summary>
-    /// 给RT赋予纯色
+    /// 给RT赋予纯色 
     /// </summary>
     public void DrawRt()
     {
@@ -205,8 +277,10 @@ public class GetID : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MoveMainCam();
-
+        HandleInput();
+        MoveCam();
+        CheckCamRange();
+        //MovePicture();
     }
 
 #if UNITY_EDITOR

@@ -35,3 +35,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+Assets/Mytex2darry.asset
+Assets/Mytex2darry.asset.meta

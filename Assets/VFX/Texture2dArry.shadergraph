@@ -26,6 +26,12 @@
         },
         {
             "m_Id": "169c431fce7f405ba34584d18923e99c"
+        },
+        {
+            "m_Id": "688881f96a2c4c2d92e86be71a357ff9"
+        },
+        {
+            "m_Id": "c66c49908c9e471aa911a42f22acec1f"
         }
     ],
     "m_GroupDatas": [],
@@ -76,8 +82,8 @@
     ],
     "m_VertexContext": {
         "m_Position": {
-            "x": 2.384185791015625e-7,
-            "y": 13.000004768371582
+            "x": 0.000013589859008789063,
+            "y": -260.0000305175781
         },
         "m_Blocks": []
     },
@@ -92,6 +98,12 @@
             },
             {
                 "m_Id": "e80ae32374704739a43e88b497400831"
+            },
+            {
+                "m_Id": "688881f96a2c4c2d92e86be71a357ff9"
+            },
+            {
+                "m_Id": "c66c49908c9e471aa911a42f22acec1f"
             }
         ]
     },
@@ -112,6 +124,21 @@
             "m_Id": "7b862531a4714e2eb97f83fa07adace5"
         }
     ]
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "04bab930a6e548909fa33435db6bf9a1",
+    "m_Id": 0,
+    "m_DisplayName": "Alpha Clip Threshold",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "AlphaClipThreshold",
+    "m_StageCapability": 2,
+    "m_Value": 0.5,
+    "m_DefaultValue": 0.5,
+    "m_Labels": []
 }
 
 {
@@ -240,6 +267,39 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
+    "m_ObjectId": "688881f96a2c4c2d92e86be71a357ff9",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "SurfaceDescription.Emission",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.0,
+            "height": 0.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "dcd86c4e8745414ab7bfbceec8c7f9cb"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedDescriptor": "SurfaceDescription.Emission"
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "6ec7418a52c745f5a18a05d2f0cdd206",
     "m_Id": 5,
@@ -275,7 +335,7 @@
     "m_Type": "UnityEditor.ShaderGraph.VFXTarget",
     "m_ObjectId": "7b862531a4714e2eb97f83fa07adace5",
     "m_Lit": false,
-    "m_AlphaTest": false
+    "m_AlphaTest": true
 }
 
 {
@@ -451,6 +511,39 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
+    "m_ObjectId": "c66c49908c9e471aa911a42f22acec1f",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "SurfaceDescription.AlphaClipThreshold",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.0,
+            "height": 0.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "04bab930a6e548909fa33435db6bf9a1"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedDescriptor": "SurfaceDescription.AlphaClipThreshold"
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "cc166383faec4bc8b3a2f1f35603828a",
     "m_Id": 7,
@@ -526,6 +619,36 @@
     },
     "m_Property": {
         "m_Id": "b061c5f7bd4a4b609e14d93fed5c5d8c"
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.ColorRGBMaterialSlot",
+    "m_ObjectId": "dcd86c4e8745414ab7bfbceec8c7f9cb",
+    "m_Id": 0,
+    "m_DisplayName": "Emission",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Emission",
+    "m_StageCapability": 2,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": [],
+    "m_ColorMode": 1,
+    "m_DefaultColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 1.0
     }
 }
 
