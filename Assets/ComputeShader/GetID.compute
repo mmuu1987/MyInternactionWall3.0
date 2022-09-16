@@ -28,7 +28,7 @@ RWStructuredBuffer<Info> ComputeBuffer;
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
    
-    if(id.x==randPos.x && id.y==randPos.y)
+    if(id.x==(uint)randPos.x && id.y== (uint)randPos.y)
     {
         float4 col = RenderTexture[id.xy];
     

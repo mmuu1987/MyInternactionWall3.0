@@ -157,3 +157,10 @@ public class Tex2DArrayTest : MonoBehaviour
     }
 
 }
+
+public class PicturesInfo: ScriptableObject
+{
+    public int ID;
+
+    public Vector2 Size;
+}

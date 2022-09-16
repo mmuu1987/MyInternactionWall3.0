@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.UI;
 using UnityEngine.VFX;
 using UnityEngine.Video;
 using Random = System.Random;
@@ -17,7 +18,7 @@ public struct Info
 
     public Vector3 Pos;
 
-   
+
 }
 
 public class GetID : MonoBehaviour
@@ -43,18 +44,27 @@ public class GetID : MonoBehaviour
 
     public VisualEffect CreatImgageLeft;
 
+    public VisualEffect CreatImageRigth;
+
+    public Texture2D TexSize;
+
+    public Button LeftExit;
+
+    public Button RightExit;
+
     private List<Info> infos = new List<Info>();
 
     private ComputeBuffer argsBuffer;
 
     private RenderTexture _renderTexture;
 
+
     private uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
 
     private int _screenWidth;
     private int _screenHeight;
 
-
+    private Dictionary<int, Vector2> _dicSize = new Dictionary<int, Vector2>();
     private void Init()
     {
 
@@ -68,12 +78,14 @@ public class GetID : MonoBehaviour
 
 
         int stride = Marshal.SizeOf(typeof(Info));
-        //Debug.Log("stride byte size is " + stride);
+        //Debug.Log("stride byte size is " + stride);  
         ComputeBuffer = new ComputeBuffer(1, stride);//16
 
         Info[] datas = new Info[ComputeBuffer.count];
 
         argsBuffer = new ComputeBuffer(5, sizeof(uint), ComputeBufferType.IndirectArguments);
+
+        // infos.Add(new Info());
 
         ComputeBuffer.SetData(infos);
 
@@ -82,14 +94,49 @@ public class GetID : MonoBehaviour
         ComputeShader.SetTexture(0, "RenderTexture", _renderTexture);
         ComputeShader.SetTexture(1, "RenderTexture", _renderTexture);
 
-        // indirect args
+        // indirect args  
         uint numIndices = 0;
         args[0] = numIndices;
         args[1] = (uint)datas.Length;
         argsBuffer.SetData(args);
 
+        LoadTexSizes();
+
+        LeftExit.onClick.AddListener((() =>
+        {
+            if (CreatImgageLeft.enabled)
+            {
+                CreatImgageLeft.SetBool("IsExit", true);
+                StartCoroutine(GlobalSetting.WaitEndFrame(() => { LeftExit.enabled = false; }));
+               
+                Debug.Log("click");
+            }
+        }));
+
+        RightExit.onClick.AddListener((() =>
+        {
+            if (CreatImageRigth.enabled)
+            {
+                CreatImageRigth.SetBool("IsExit", true);
+                StartCoroutine(GlobalSetting.WaitEndFrame(() => { RightExit.enabled = false; }));
+                Debug.Log("click");
+            }
+        }));
     }
 
+    public void LoadTexSizes()
+    {
+
+
+        for (int i = 0; i < TexSize.width; i++)
+        {
+
+            Color col = TexSize.GetPixel(i, 1, 0);
+            Vector2 size = new Vector2(col.r, col.g) * 512f;
+
+            _dicSize.Add(i, size);
+        }
+    }
     public void DisPatch()
     {
 
@@ -112,6 +159,23 @@ public class GetID : MonoBehaviour
 
     public void DisPatch(Vector2 pos)
     {
+        Debug.Log("DisPatch");
+
+        if (pos.x <= 1920f)
+        {
+            if (LeftExit.enabled)
+            {
+                return;
+            }
+        }
+
+        if (pos.x > 1920f)
+        {
+            if (RightExit.enabled)
+            {
+                return;
+            }
+        }
         ComputeShader.SetVector("randPos", pos);
 
 
@@ -120,24 +184,75 @@ public class GetID : MonoBehaviour
 
         Info[] datas = new Info[1];
 
-       
+
         ComputeBuffer.GetData(datas);
 
         Info info = datas[0];
 
         if (info.ID == -1) return;
 
-        Debug.Log("value is " + info.ID + "  Õº∆¨√˚◊÷ « " + PictureList[info.ID].name + "  Œª÷√ «£∫" + datas[0].Pos);
+        if (info.ID >= 999)
+        {
 
-        //Debug.Log("value is " + info.ID + "  Õº∆¨√˚◊÷ « " + PictureList[info.ID].name + "  Œª÷√ «£∫" + datas[0].Pos);
+            Debug.Log("Ë∂ÖËøáËåÉÂõ¥" + info.ID);
+            return;
+        }
+
+        Debug.Log("value is " + info.ID + "  ÂõæÁâáÂêçÂ≠ó " + PictureList[info.ID].name + "  ÁÇπÂáª‰ΩçÁΩÆ" + datas[0].Pos);
+
+
 
         float depth = info.Depth;
 
-        float camDepth = depth- MainCamera.transform.position.z ;//µ√µΩ”Îœ‡ª˙µƒæ‡¿Î
+        float camDepth = depth - MainCamera.transform.position.z;//
 
         Vector3 worldPos = MainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, camDepth));
 
-        Debug.Log("µ√µΩµƒ ¿ΩÁŒª÷√ «£∫"+ worldPos);
+        Debug.Log("‰∏ñÁïåÂùêÊ†á‰ΩçÁΩÆ" + worldPos);
+
+        VisualEffect temp = null;
+
+        float xPos = 0f;
+
+        float dir = 1;
+
+        if (Input.mousePosition.x < 1920f)
+        {
+            temp = CreatImgageLeft;
+            xPos = -350f;
+            dir = -1f;
+            LeftExit.enabled=true;
+
+        }
+        else
+        {
+            temp = CreatImageRigth;
+            xPos = 350f;
+            dir = 1f;
+            RightExit.enabled=true;
+        }
+
+        temp.enabled = false;
+
+        temp.SetBool("IsExit", false);
+
+        temp.SetVector3("ClickPos", worldPos);
+
+        temp.SetFloat("Dir", dir);
+
+        Vector2 size = GlobalSetting.ScaleImageSize(new Vector2(PictureList[info.ID].width, PictureList[info.ID].height), new Vector2(512f, 512f));
+
+        Debug.Log("‰ªéÂõæ‰∏≠Ëé∑ÂèñÁöÑÂ∞∫ÂØ∏ÊòØÔºö" + _dicSize[info.ID] + " ‰ªéËµÑÊ∫ê‰∏≠Ëé∑ÂèñÁöÑÂ∞∫ÂØ∏ÊòØ " + size);
+
+
+
+        temp.SetVector3("PictureSize", _dicSize[info.ID]);
+
+        temp.SetVector3("PictureCenter", new Vector3(xPos, 0f, 600f));
+
+        temp.SetInt("PictureID", info.ID);
+
+        temp.enabled = true;
 
         //TargetGameObject.transform.position = worldPos;
 
@@ -153,7 +268,7 @@ public class GetID : MonoBehaviour
     private bool _isButtonUp = false;
     public float MoveSpeed = 1f;
     /// <summary>
-    /// “∆∂Ø÷˜œ‡ª˙
+    /// 
     /// </summary>
     public void HandleInput()
     {
@@ -175,9 +290,9 @@ public class GetID : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _isButtonUp = true;
-            if (_clikcTimeTemp <= 0.2f)//¥•∑¢µ„ª˜ ¬º˛
+            if (_clikcTimeTemp <= 0.2f)//
             {
-                Debug.Log("µ„ª˜µƒŒª÷√ «£∫ " + Input.mousePosition);
+                Debug.Log("" + Input.mousePosition);
                 float clickWidth = _preMousePos.x;
                 float clickHeight = _preMousePos.y;
 
@@ -186,7 +301,7 @@ public class GetID : MonoBehaviour
         }
 
 
-      
+
     }
 
     public void MoveCam()
@@ -196,7 +311,7 @@ public class GetID : MonoBehaviour
 
         Vector3 pos;
         if (_isButtonUp)
-          pos = MoveSpeed * _delta * 0.1f;
+            pos = MoveSpeed * _delta * 0.1f;
         else
             pos = MoveSpeed * _delta;
 
@@ -207,7 +322,7 @@ public class GetID : MonoBehaviour
     }
 
     /// <summary>
-    /// ºÏ≤‚œ‡ª˙µƒ∑∂Œß «∑Ò‘ΩΩÁ
+    /// 
     /// </summary>
     public void CheckCamRange()
     {
@@ -230,36 +345,41 @@ public class GetID : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
 
-           
+
 
             _delta = _preMousePos - Input.mousePosition;
             _preMousePos = Input.mousePosition;
 
             Vector3 pos = MoveSpeed * _delta;
 
-            Vfx.SetVector3("MoveDelta",pos);
+            Vfx.SetVector3("MoveDelta", pos);
 
 
             _clikcTimeTemp += Time.deltaTime;
         }
-
+        //
         if (Input.GetMouseButtonUp(0))
         {
-            if (_clikcTimeTemp <= 0.2f)//¥•∑¢µ„ª˜ ¬º˛
+            float dis = Vector2.Distance(Input.mousePosition, _preMousePos);
+
+            if (dis >= 5f) return;
+            if (_clikcTimeTemp <= 0.2f)
             {
-                Debug.Log("µ„ª˜µƒŒª÷√ «£∫ " + Input.mousePosition);
+                Debug.Log("ÁÇπÂáªÁöÑÂ±èÂπïÂùêÊ†á " + Input.mousePosition);
                 float clickWidth = _preMousePos.x;
                 float clickHeight = _preMousePos.y;
+
+                
 
                 DisPatch(new Vector2(clickWidth, clickHeight));
             }
         }
 
 
-      
+
     }
     /// <summary>
-    /// ∏¯RT∏≥”Ë¥ø…´ 
+    /// 
     /// </summary>
     public void DrawRt()
     {
@@ -274,13 +394,13 @@ public class GetID : MonoBehaviour
         Init();
     }
 
-    // Update is called once per frame
+    // Update is called once per frame  
     void Update()
     {
-        HandleInput();
-        MoveCam();
+        //HandleInput();
+        //MoveCam();
         CheckCamRange();
-        //MovePicture();
+        MovePicture();
     }
 
 #if UNITY_EDITOR
