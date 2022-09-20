@@ -79,7 +79,7 @@ public class GetID : MonoBehaviour
 
         int stride = Marshal.SizeOf(typeof(Info));
         //Debug.Log("stride byte size is " + stride);  
-        ComputeBuffer = new ComputeBuffer(1, stride);//16
+        ComputeBuffer = new ComputeBuffer(1, stride);//16 
 
         Info[] datas = new Info[ComputeBuffer.count];
 
@@ -108,7 +108,7 @@ public class GetID : MonoBehaviour
             {
                 CreatImgageLeft.SetBool("IsExit", true);
                 StartCoroutine(GlobalSetting.WaitEndFrame(() => { LeftExit.enabled = false; }));
-               
+
                 Debug.Log("click");
             }
         }));
@@ -221,7 +221,7 @@ public class GetID : MonoBehaviour
             temp = CreatImgageLeft;
             xPos = -350f;
             dir = -1f;
-            LeftExit.enabled=true;
+            LeftExit.enabled = true;
 
         }
         else
@@ -229,7 +229,7 @@ public class GetID : MonoBehaviour
             temp = CreatImageRigth;
             xPos = 350f;
             dir = 1f;
-            RightExit.enabled=true;
+            RightExit.enabled = true;
         }
 
         temp.enabled = false;
@@ -369,7 +369,7 @@ public class GetID : MonoBehaviour
                 float clickWidth = _preMousePos.x;
                 float clickHeight = _preMousePos.y;
 
-                
+
 
                 DisPatch(new Vector2(clickWidth, clickHeight));
             }
@@ -398,8 +398,8 @@ public class GetID : MonoBehaviour
     void Update()
     {
         //HandleInput();
-        //MoveCam();
-        CheckCamRange();
+        //MoveCam(); 、、 Check
+        //CamRange();
         MovePicture();
     }
 
