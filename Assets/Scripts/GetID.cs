@@ -52,6 +52,8 @@ public class GetID : MonoBehaviour
 
     public Button RightExit;
 
+    public TouchEventWall TouchEventWall;
+
     private List<Info> infos = new List<Info>();
 
     private ComputeBuffer argsBuffer;
@@ -122,12 +124,38 @@ public class GetID : MonoBehaviour
                 Debug.Log("click");
             }
         }));
+
+        TouchEventWall.OnBeginDragEvent += TouchEventWall_OnBeginDragEvent;
+
+        TouchEventWall.OnEndDragEvent += TouchEventWall_OnEndDragEvent;
+
+        TouchEventWall.DragMoveEvent +=    OnDragEvent;
+
+        TouchEventWall.OnClick += TouchEventWall_OnClick;
+    }
+
+    private void TouchEventWall_OnClick(UnityEngine.EventSystems.PointerEventData obj)
+    {
+        DisPatch(obj.position);
+    }
+
+    private void TouchEventWall_OnEndDragEvent(UnityEngine.EventSystems.PointerEventData obj)
+    {
+       // _delta = obj.delta * MoveSpeed ;// _delta
+    }
+    private void TouchEventWall_OnBeginDragEvent(UnityEngine.EventSystems.PointerEventData obj)
+    {
+       
+    }
+    private void OnDragEvent(UnityEngine.EventSystems.PointerEventData obj)
+    {
+        _delta =Vector3.Normalize( obj.delta)*MoveSpeed;// _delta
+        Vfx.SetVector3("MoveDelta", _delta);
+       // Debug.Log(_delta);
     }
 
     public void LoadTexSizes()
     {
-
-
         for (int i = 0; i < TexSize.width; i++)
         {
 
@@ -216,7 +244,7 @@ public class GetID : MonoBehaviour
 
         float dir = 1;
 
-        if (Input.mousePosition.x < 1920f)
+        if (pos.x < 1920f)
         {
             temp = CreatImgageLeft;
             xPos = -350f;
@@ -254,11 +282,6 @@ public class GetID : MonoBehaviour
 
         temp.enabled = true;
 
-        //TargetGameObject.transform.position = worldPos;
-
-        // MainCamera.transform.DOMove(worldPos + new Vector3(0f, 0f, -2f), 1f);
-
-
     }
 
     private Vector3 _preMousePos;
@@ -267,73 +290,7 @@ public class GetID : MonoBehaviour
 
     private bool _isButtonUp = false;
     public float MoveSpeed = 1f;
-    /// <summary>
-    /// 
-    /// </summary>
-    public void HandleInput()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            _preMousePos = Input.mousePosition;
-            _clikcTimeTemp = 0f;
-            _isButtonUp = false;
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            _delta = _preMousePos - Input.mousePosition;
-            _preMousePos = Input.mousePosition;
-
-            _clikcTimeTemp += Time.deltaTime;
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            _isButtonUp = true;
-            if (_clikcTimeTemp <= 0.2f)//
-            {
-                Debug.Log("" + Input.mousePosition);
-                float clickWidth = _preMousePos.x;
-                float clickHeight = _preMousePos.y;
-
-                DisPatch(new Vector2(clickWidth, clickHeight));
-            }
-        }
-
-
-
-    }
-
-    public void MoveCam()
-    {
-
-        Vector3 minPos = MainCamera.transform.position;
-
-        Vector3 pos;
-        if (_isButtonUp)
-            pos = MoveSpeed * _delta * 0.1f;
-        else
-            pos = MoveSpeed * _delta;
-
-        MainCamera.transform.position = pos + minPos;
-
-        ColCamera.transform.position = MainCamera.transform.position + new Vector3(0f, 500f, 0f);
-
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public void CheckCamRange()
-    {
-        Vector3 pos = MainCamera.transform.position;
-
-        if (pos.x <= Rect.x || pos.x > Rect.y || pos.y <= Rect.z || pos.y > Rect.w)
-        {
-
-            _delta = -1 * _delta;
-        }
-    }
+  
     public void MovePicture()
     {
         if (Input.GetMouseButtonDown(0))
@@ -342,20 +299,23 @@ public class GetID : MonoBehaviour
             _clikcTimeTemp = 0f;
         }
 
+        Vector3 addPos;
         if (Input.GetMouseButton(0))
         {
-
-
-
             _delta = _preMousePos - Input.mousePosition;
             _preMousePos = Input.mousePosition;
 
-            Vector3 pos = MoveSpeed * _delta;
+             addPos = MoveSpeed *10 * _delta;
 
-            Vfx.SetVector3("MoveDelta", pos);
-
+             Vfx.SetVector3("MoveDelta", addPos);
 
             _clikcTimeTemp += Time.deltaTime;
+        }
+        else
+        {
+            addPos = MoveSpeed  * _delta;
+
+            Vfx.SetVector3("MoveDelta", addPos);
         }
         //
         if (Input.GetMouseButtonUp(0))
@@ -373,21 +333,16 @@ public class GetID : MonoBehaviour
 
                 DisPatch(new Vector2(clickWidth, clickHeight));
             }
+
+            _delta = Vector3.Normalize(_delta) * MoveSpeed;
+
+            addPos = MoveSpeed  * _delta;
         }
 
-
+     
 
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    public void DrawRt()
-    {
-        ComputeShader.SetVector("Col", Color);
-
-        ComputeShader.Dispatch(1, _screenWidth / 8, _screenHeight / 8, 1);
-    }
-
+   
     // Start is called before the first frame update
     void Start()
     {
@@ -400,7 +355,9 @@ public class GetID : MonoBehaviour
         //HandleInput();
         //MoveCam(); 、、 Check
         //CamRange();
-        MovePicture();
+        // MovePicture();
+        //Debug.Log(_delta);
+       // Vfx.SetVector3("MoveDelta", _delta);
     }
 
 #if UNITY_EDITOR
@@ -410,11 +367,6 @@ public class GetID : MonoBehaviour
         {
             MainCamera.transform.DOMove(new Vector3(0f, 0f, 0f), 1f);
         }
-
-        //if (GUI.Button(new Rect(100f, 0f, 100f, 100f), "test"))
-        //{
-        //    DrawRt(); 
-        //}
     }
 #endif
 }
